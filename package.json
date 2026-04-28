@@ -1,0 +1,58 @@
+{
+  "name": "time-tracker",
+  "displayName": "Time Tracker",
+  "description": "VSCode extension for tracking work and break sessions.",
+  "version": "0.0.1",
+  "publisher": "envis",
+  "private": true,
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:timeTracker.start",
+    "onCommand:timeTracker.stop",
+    "onCommand:timeTracker.openDashboard"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "timeTracker.start",
+        "title": "Time Tracker: Start Working"
+      },
+      {
+        "command": "timeTracker.stop",
+        "title": "Time Tracker: Stop Working"
+      },
+      {
+        "command": "timeTracker.startBreak",
+        "title": "Time Tracker: Start Break"
+      },
+      {
+        "command": "timeTracker.endBreak",
+        "title": "Time Tracker: End Break"
+      },
+      {
+        "command": "timeTracker.extend",
+        "title": "Time Tracker: Extend Work Session"
+      },
+      {
+        "command": "timeTracker.openDashboard",
+        "title": "Time Tracker: Open Dashboard"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.5.2"
+  }
+}
