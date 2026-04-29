@@ -7,6 +7,7 @@ import { IdleDetector } from "./tracker/IdleDetector";
 import { ScheduleManager } from "./tracker/ScheduleManager";
 import { TimerEngine } from "./tracker/TimerEngine";
 import { DashboardPanel } from "./ui/DashboardPanel";
+import { QuickTimerViewProvider } from "./ui/QuickTimerViewProvider";
 import { StatusBar } from "./ui/StatusBar";
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
@@ -53,9 +54,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       idleDetector.updateThreshold(nextSettings.idleThresholdMin);
     }
   });
+  const quickTimerViewProvider = new QuickTimerViewProvider({
+    timerEngine,
+    onExtendRequested: () => {
+      scheduleManager.cancelScheduledStop();
+      timerEngine.extendWork();
+    },
+    onOpenDashboard: () => {
+      dashboardPanel.open();
+    }
+  });
 
   timerEngine.onStateChange((state) => {
     dashboardPanel.refresh();
+    quickTimerViewProvider.refresh();
     void breakManager.handleStateChange(state);
 
     if (state === "extended") {
@@ -69,6 +81,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   timerEngine.onTick(() => {
     dashboardPanel.refresh();
+    quickTimerViewProvider.refresh();
   });
 
   await recoverOpenSegment(storageService, timerEngine, notificationService);
@@ -77,9 +90,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   scheduleManager.start();
 
   void breakManager.handleStateChange(timerEngine.getState());
+  quickTimerViewProvider.refresh();
 
   context.subscriptions.push(
     statusBar,
+    vscode.window.registerWebviewViewProvider(
+      QuickTimerViewProvider.viewType,
+      quickTimerViewProvider
+    ),
     vscode.commands.registerCommand("timeTracker.start", async () => {
       await timerEngine.start();
     }),
