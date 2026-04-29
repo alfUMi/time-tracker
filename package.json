@@ -2,7 +2,7 @@
   "name": "time-tracker",
   "displayName": "Time Tracker",
   "description": "VSCode extension for tracking work and break sessions.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "envis",
   "private": true,
   "engines": {
@@ -24,7 +24,9 @@
       "explorer": [
         {
           "id": "timeTracker.quickTimerView",
-          "name": "Time Tracker"
+          "name": "Time Tracker",
+          "type": "webview",
+          "icon": ""
         }
       ]
     },
