@@ -117,6 +117,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.commands.registerCommand("timeTracker.openDashboard", () => {
       dashboardPanel.open();
     }),
+    vscode.commands.registerCommand("timeTracker.openStorageFile", async () => {
+      await storageService.initialize();
+
+      const filePath = storageService.getDataFilePath();
+      const document = await vscode.workspace.openTextDocument(
+        vscode.Uri.file(filePath)
+      );
+
+      await vscode.window.showTextDocument(document, {
+        preview: false
+      });
+    }),
     {
       dispose: () => {
         breakManager.dispose();

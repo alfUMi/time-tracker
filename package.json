@@ -2,7 +2,7 @@
   "name": "time-tracker",
   "displayName": "Time Tracker",
   "description": "VSCode extension for tracking work and break sessions.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "envis",
   "private": true,
   "engines": {
@@ -54,6 +54,10 @@
       {
         "command": "timeTracker.openDashboard",
         "title": "Time Tracker: Open Dashboard"
+      },
+      {
+        "command": "timeTracker.openStorageFile",
+        "title": "Time Tracker: Open Storage File"
       }
     ]
   },

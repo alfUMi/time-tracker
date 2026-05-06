@@ -164,6 +164,10 @@ export class StorageService {
     return data.settings;
   }
 
+  public getDataFilePath(): string {
+    return this.dataFilePath;
+  }
+
   private async getRecordsFromDate(startDate: Date): Promise<DayRecord[]> {
     const data = await this.readData();
     const startDateString = this.toDateKey(startDate);
