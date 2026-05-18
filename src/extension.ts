@@ -26,19 +26,44 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       await timerEngine.start();
     },
     onAutoStop: async () => {
+      const stopDelayMs = 10_000;
+      let didStop = false;
+
+      const stopNow = async () => {
+        if (didStop) {
+          return;
+        }
+
+        didStop = true;
+
+        await timerEngine.stop();
+      };
+
+      const stopTimeout = setTimeout(() => {
+        void stopNow();
+      }, stopDelayMs);
+
       const choice = await notificationService.showWarningWithActions(
         "Time Tracker: Scheduled stop time reached.",
-        ["Stop Working", "Extend Work"]
+        ["Extend Work", "Stop Working"]
       );
 
       if (choice === "Extend Work") {
+        clearTimeout(stopTimeout);
         scheduleManager.cancelScheduledStop();
+
+        if (didStop) {
+          await timerEngine.start();
+        }
+
         timerEngine.extendWork();
 
         return;
       }
 
-      await timerEngine.stop();
+      clearTimeout(stopTimeout);
+
+      await stopNow();
     }
   });
   const dashboardPanel = new DashboardPanel({
@@ -84,7 +109,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     quickTimerViewProvider.refresh();
   });
 
-  await recoverOpenSegment(storageService, timerEngine, notificationService);
+  await recoverOpenSegment(storageService, timerEngine);
 
   statusBar.show();
   scheduleManager.start();
@@ -149,12 +174,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
 export function deactivate(): void {}
 
-const RECOVERY_PROMPT_THRESHOLD_MS = 5 * 60 * 1000;
-
 async function recoverOpenSegment(
   storageService: StorageService,
-  timerEngine: TimerEngine,
-  notificationService: NotificationService
+  timerEngine: TimerEngine
 ): Promise<void> {
   const openSegments = await storageService.getOpenSegments();
 
@@ -171,26 +193,6 @@ async function recoverOpenSegment(
       stale.segment.start,
       Date.now()
     );
-  }
-
-  const elapsedSinceStart = Date.now() - latest.segment.start;
-  const shouldPrompt = elapsedSinceStart >= RECOVERY_PROMPT_THRESHOLD_MS;
-
-  if (shouldPrompt) {
-    const action = await notificationService.showWarningWithActions(
-      "Time Tracker: Previous session appears to still be open.",
-      ["Close Previous Session", "Resume Session"]
-    );
-
-    if (action === "Close Previous Session") {
-      await storageService.closeSegmentByStart(
-        latest.date,
-        latest.segment.start,
-        Date.now()
-      );
-
-      return;
-    }
   }
 
   if (latest.segment.type === "work" || latest.segment.type === "break") {

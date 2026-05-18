@@ -95,6 +95,16 @@ export class ScheduleManager {
       target.setDate(target.getDate() + 1);
     }
 
+    while (this.isWeekend(target)) {
+      target.setDate(target.getDate() + 1);
+    }
+
     return target;
+  }
+
+  private isWeekend(value: Date): boolean {
+    const day = value.getDay();
+
+    return day === 0 || day === 6;
   }
 }

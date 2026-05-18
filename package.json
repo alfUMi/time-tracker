@@ -2,7 +2,7 @@
   "name": "time-tracker",
   "displayName": "Time Tracker",
   "description": "VSCode extension for tracking work and break sessions.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "envis",
   "private": true,
   "engines": {
