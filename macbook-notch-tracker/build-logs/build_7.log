@@ -1,0 +1,17 @@
+[1/1] Planning build
+Building for debugging...
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Dashboard/DashboardRootView.swift:158:40: error: value of type 'AppContainer' has no member 'notchCoordinator'
+ 156 |                         DashboardStateChip(state: container.sessionEngine.currentState)
+ 157 | 
+ 158 |                         Text(container.notchCoordinator.isPinnedByCommand ? "Pinned Notch" : "Hover Notch")
+     |                                        `- error: value of type 'AppContainer' has no member 'notchCoordinator'
+ 159 |                             .font(.caption)
+ 160 |                             .foregroundStyle(DesignTokens.Colors.textSecondary)
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Dashboard/DashboardRootView.swift:158:40: error: value of type 'AppContainer' has no member 'notchCoordinator'
+ 156 |                         DashboardStateChip(state: container.sessionEngine.currentState)
+ 157 | 
+ 158 |                         Text(container.notchCoordinator.isPinnedByCommand ? "Pinned Notch" : "Hover Notch")
+     |                                        `- error: value of type 'AppContainer' has no member 'notchCoordinator'
+ 159 |                             .font(.caption)
+ 160 |                             .foregroundStyle(DesignTokens.Colors.textSecondary)
+[21/24] Compiling MacBookNotchTracker IslandSceneController.swift

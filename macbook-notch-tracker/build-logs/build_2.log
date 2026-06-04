@@ -1,0 +1,55 @@
+Building for debugging...
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:38:44: error: 'self' used in property access 'settings' before all stored properties are initialized
+ 9 |     let launchAtLoginController: LaunchAtLoginControlling
+10 |     let sectionRegistry: DashboardSectionRegistry
+11 |     let sessionEngine: SessionEngine
+   |         `- note: 'self.sessionEngine' not initialized
+12 |     let notchCoordinator: NotchOverlayCoordinator
+13 | 
+   :
+16 | 
+17 |     @ObservationIgnored
+18 |     let commandRouter: AppCommandRouter
+   |         `- note: 'self.commandRouter' not initialized
+19 | 
+20 |     init(
+   :
+36 |             sessionStore: sessionStore,
+37 |             notificationService: notificationService,
+38 |             breakReminderMinutes: settings.breakReminderMinutes
+   |                                            `- error: 'self' used in property access 'settings' before all stored properties are initialized
+39 |         )
+40 |         self.commandRouter = AppCommandRouter(container: self)
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:40:30: error: 'self' used before all stored properties are initialized
+16 | 
+17 |     @ObservationIgnored
+18 |     let commandRouter: AppCommandRouter
+   |         `- note: 'self.commandRouter' not initialized
+19 | 
+20 |     init(
+   :
+38 |             breakReminderMinutes: settings.breakReminderMinutes
+39 |         )
+40 |         self.commandRouter = AppCommandRouter(container: self)
+   |                              `- error: 'self' used before all stored properties are initialized
+41 | 
+42 |         notchCoordinator.onPresentationChanged = { [weak self] in
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/OverlayPreviewController.swift:65:30: warning: call to main actor-isolated instance method 'handleNotchTriggerHover' in a synchronous nonisolated context [#ActorIsolatedCall]
+ 63 | 
+ 64 |         let hoverView = HoverTrackingView { [weak self] isHovering in
+ 65 |             self?.container?.handleNotchTriggerHover(isHovering)
+    |                              `- warning: call to main actor-isolated instance method 'handleNotchTriggerHover' in a synchronous nonisolated context [#ActorIsolatedCall]
+ 66 |         }
+ 67 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:67:10: note: calls to instance method 'handleNotchTriggerHover' from outside of its actor context are implicitly asynchronous
+65 |     }
+66 | 
+67 |     func handleNotchTriggerHover(_ isHovering: Bool) {
+   |          `- note: calls to instance method 'handleNotchTriggerHover' from outside of its actor context are implicitly asynchronous
+68 |         notchCoordinator.triggerHoverChanged(isHovering)
+69 |         synchronizeOverlayVisibility()
+
+[#ActorIsolatedCall]: <https://docs.swift.org/compiler/documentation/diagnostics/actor-isolated-call>
+[13/16] Compiling MacBookNotchTracker OverlayPreviewController.swift

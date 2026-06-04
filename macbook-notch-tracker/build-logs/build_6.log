@@ -1,0 +1,18 @@
+Building for debugging...
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/OverlayPreviewController.swift:94:21: error: cannot assign value of type 'NSHostingView<some View>' to type 'NSHostingView<NotchOverlayHostView>'
+ 92 |         panel.orderFrontRegardless()
+ 93 | 
+ 94 |         hostingView = contentView
+    |                     |- error: cannot assign value of type 'NSHostingView<some View>' to type 'NSHostingView<NotchOverlayHostView>'
+    |                     `- note: arguments to generic parameter 'Content' ('some View' and 'NotchOverlayHostView') are expected to be equal
+ 95 |         overlayPanel = panel
+ 96 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/OverlayPreviewController.swift:103:14: error: cannot assign value of type 'some View' to type 'NotchOverlayHostView'
+101 |         hostingView.rootView = NotchOverlayHostView(isPresented: isVisible)
+102 |             .environment(container)
+103 |             .preferredColorScheme(.dark)
+    |              `- error: cannot assign value of type 'some View' to type 'NotchOverlayHostView'
+104 |     }
+105 | 
+[5/7] Compiling MacBookNotchTracker OverlayPreviewController.swift

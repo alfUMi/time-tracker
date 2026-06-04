@@ -1,0 +1,723 @@
+[1/1] Planning build
+Building for debugging...
+error: emit-module command failed with exit code 1 (use -v to see invocation)
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:5: error: 'lazy' cannot be used on a computed property
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |     `- error: 'lazy' cannot be used on a computed property
+17 | 
+18 |     init(
+
+macro expansion @ObservationTracked:2:6: error: init accessor cannot refer to property '_commandRouter'; init accessors can refer only to stored properties
+`- /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:63: note: expanded code originates here
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   +--- macro expansion @ObservationTracked ----------------------------
+   | 1 | {
+   | 2 |     @storageRestrictions(initializes: _commandRouter)
+   |   |      `- error: init accessor cannot refer to property '_commandRouter'; init accessors can refer only to stored properties
+   | 3 |     init(initialValue) {
+   | 4 |       _commandRouter = initialValue
+   +--------------------------------------------------------------------
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:30: error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |                              `- error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Commands/AppCommandRouter.swift:7:5: note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 5 |     private unowned let container: AppContainer
+ 6 | 
+ 7 |     init(container: AppContainer) {
+   |     `- note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 8 |         self.container = container
+ 9 |     }
+
+macro expansion @ObservationTracked:3:33: error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+`- /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:63: note: expanded code originates here
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   +--- macro expansion @ObservationTracked ----------------------------
+   |1 | @ObservationIgnored private
+   |2 | 
+   |3 |     lazy  var _commandRouter  = AppCommandRouter(container: self)
+   |  |                                 `- error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+   +--------------------------------------------------------------------
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Commands/AppCommandRouter.swift:7:5: note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 5 |     private unowned let container: AppContainer
+ 6 | 
+ 7 |     init(container: AppContainer) {
+   |     `- note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 8 |         self.container = container
+ 9 |     }
+
+[#ActorIsolatedCall]: <https://docs.swift.org/compiler/documentation/diagnostics/actor-isolated-call>
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:5: error: 'lazy' cannot be used on a computed property
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |     `- error: 'lazy' cannot be used on a computed property
+17 | 
+18 |     init(
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:5: error: 'lazy' cannot be used on a computed property
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |     `- error: 'lazy' cannot be used on a computed property
+17 | 
+18 |     init(
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:195:13: warning: boolean literal is unused [#no-usage]
+193 |              (.paused, .running),
+194 |              (.onBreak, .running):
+195 |             true
+    |             `- warning: boolean literal is unused [#no-usage]
+196 |         case let (current, next) where current == next:
+197 |             true
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:197:13: warning: boolean literal is unused [#no-usage]
+195 |             true
+196 |         case let (current, next) where current == next:
+197 |             true
+    |             `- warning: boolean literal is unused [#no-usage]
+198 |         default:
+199 |             false
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:199:13: warning: boolean literal is unused [#no-usage]
+197 |             true
+198 |         default:
+199 |             false
+    |             `- warning: boolean literal is unused [#no-usage]
+200 |         }
+201 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:220:26: warning: result of call to 'isDate(_:inSameDayAs:)' is unused [#no-usage]
+218 |             switch range {
+219 |             case .day:
+220 |                 calendar.isDate(record.startedAt, inSameDayAs: now)
+    |                          `- warning: result of call to 'isDate(_:inSameDayAs:)' is unused [#no-usage]
+221 |             case .week:
+222 |                 guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: now) else { return false }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:201:5: error: missing return in instance method expected to return 'Bool'
+199 |             false
+200 |         }
+201 |     }
+    |     `- error: missing return in instance method expected to return 'Bool'
+202 | 
+203 |     private func persistSnapshot() {
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:228:9: error: missing return in closure expected to return 'Bool'
+226 |                 return monthInterval.contains(record.startedAt)
+227 |             }
+228 |         }
+    |         `- error: missing return in closure expected to return 'Bool'
+229 |         .sorted { $0.startedAt > $1.startedAt }
+230 |     }
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:195:13: warning: boolean literal is unused [#no-usage]
+193 |              (.paused, .running),
+194 |              (.onBreak, .running):
+195 |             true
+    |             `- warning: boolean literal is unused [#no-usage]
+196 |         case let (current, next) where current == next:
+197 |             true
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:197:13: warning: boolean literal is unused [#no-usage]
+195 |             true
+196 |         case let (current, next) where current == next:
+197 |             true
+    |             `- warning: boolean literal is unused [#no-usage]
+198 |         default:
+199 |             false
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:199:13: warning: boolean literal is unused [#no-usage]
+197 |             true
+198 |         default:
+199 |             false
+    |             `- warning: boolean literal is unused [#no-usage]
+200 |         }
+201 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:220:26: warning: result of call to 'isDate(_:inSameDayAs:)' is unused [#no-usage]
+218 |             switch range {
+219 |             case .day:
+220 |                 calendar.isDate(record.startedAt, inSameDayAs: now)
+    |                          `- warning: result of call to 'isDate(_:inSameDayAs:)' is unused [#no-usage]
+221 |             case .week:
+222 |                 guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: now) else { return false }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:201:5: error: missing return in instance method expected to return 'Bool'
+199 |             false
+200 |         }
+201 |     }
+    |     `- error: missing return in instance method expected to return 'Bool'
+202 | 
+203 |     private func persistSnapshot() {
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Session/SessionEngine.swift:228:9: error: missing return in closure expected to return 'Bool'
+226 |                 return monthInterval.contains(record.startedAt)
+227 |             }
+228 |         }
+    |         `- error: missing return in closure expected to return 'Bool'
+229 |         .sorted { $0.startedAt > $1.startedAt }
+230 |     }
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:5: error: 'lazy' cannot be used on a computed property
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |     `- error: 'lazy' cannot be used on a computed property
+17 | 
+18 |     init(
+
+macro expansion @ObservationTracked:2:6: error: init accessor cannot refer to property '_commandRouter'; init accessors can refer only to stored properties
+`- /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:63: note: expanded code originates here
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   +--- macro expansion @ObservationTracked ----------------------------
+   | 1 | {
+   | 2 |     @storageRestrictions(initializes: _commandRouter)
+   |   |      `- error: init accessor cannot refer to property '_commandRouter'; init accessors can refer only to stored properties
+   | 3 |     init(initialValue) {
+   | 4 |       _commandRouter = initialValue
+   +--------------------------------------------------------------------
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:30: error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |                              `- error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Commands/AppCommandRouter.swift:7:5: note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 5 |     private unowned let container: AppContainer
+ 6 | 
+ 7 |     init(container: AppContainer) {
+   |     `- note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 8 |         self.container = container
+ 9 |     }
+
+macro expansion @ObservationTracked:3:33: error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+`- /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:63: note: expanded code originates here
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   +--- macro expansion @ObservationTracked ----------------------------
+   |1 | @ObservationIgnored private
+   |2 | 
+   |3 |     lazy  var _commandRouter  = AppCommandRouter(container: self)
+   |  |                                 `- error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+   +--------------------------------------------------------------------
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Commands/AppCommandRouter.swift:7:5: note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 5 |     private unowned let container: AppContainer
+ 6 | 
+ 7 |     init(container: AppContainer) {
+   |     `- note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 8 |         self.container = container
+ 9 |     }
+
+macro expansion @ObservationTracked:4:7: error: cannot reference instance member '_commandRouter'; init accessors can only refer to instance properties listed in 'initializes' and 'accesses' attributes
+`- /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:63: note: expanded code originates here
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   +--- macro expansion @ObservationTracked ----------------------------
+   | 2 |     @storageRestrictions(initializes: _commandRouter)
+   | 3 |     init(initialValue) {
+   | 4 |       _commandRouter = initialValue
+   |   |       `- error: cannot reference instance member '_commandRouter'; init accessors can only refer to instance properties listed in 'initializes' and 'accesses' attributes
+   | 5 |     }
+   | 6 |     get {
+   +--------------------------------------------------------------------
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:32:33: error: call to main actor-isolated initializer 'init()' in a synchronous nonisolated context [#ActorIsolatedCall]
+30 |         self.settings = settingsStore.loadSettings()
+31 |         self.selectedSection = sectionRegistry.sections.first ?? .overview
+32 |         self.notchCoordinator = NotchOverlayCoordinator()
+   |                                 `- error: call to main actor-isolated initializer 'init()' in a synchronous nonisolated context [#ActorIsolatedCall]
+33 |         self.sessionEngine = SessionEngine(
+34 |             sessionStore: sessionStore,
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:6:13: note: calls to initializer 'init()' from outside of its actor context are implicitly asynchronous
+  4 | @MainActor
+  5 | @Observable
+  6 | final class NotchOverlayCoordinator {
+    |             `- note: calls to initializer 'init()' from outside of its actor context are implicitly asynchronous
+  7 |     enum PresentationPhase: String {
+  8 |         case hidden
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:39:26: error: main actor-isolated property 'onPresentationChanged' can not be mutated from a nonisolated context
+37 |         )
+38 | 
+39 |         notchCoordinator.onPresentationChanged = { [weak self] in
+   |                          `- error: main actor-isolated property 'onPresentationChanged' can not be mutated from a nonisolated context
+40 |             self?.synchronizeOverlayVisibility()
+41 |         }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:15:9: note: mutation of this property is only permitted within the actor
+ 13 |     private(set) var phase: PresentationPhase = .hidden
+ 14 |     private(set) var isPinnedByCommand = false
+ 15 |     var onPresentationChanged: (() -> Void)?
+    |         `- note: mutation of this property is only permitted within the actor
+ 16 | 
+ 17 |     var revealDelayMilliseconds = 120
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:42:26: error: call to main actor-isolated instance method 'updateSettings' in a synchronous nonisolated context [#ActorIsolatedCall]
+40 |             self?.synchronizeOverlayVisibility()
+41 |         }
+42 |         notchCoordinator.updateSettings(settings)
+   |                          `- error: call to main actor-isolated instance method 'updateSettings' in a synchronous nonisolated context [#ActorIsolatedCall]
+43 |         notificationService.requestAuthorizationIfNeeded()
+44 |         synchronizeOverlayVisibility()
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:30:10: note: calls to instance method 'updateSettings' from outside of its actor context are implicitly asynchronous
+ 28 |     }
+ 29 | 
+ 30 |     func updateSettings(_ settings: AppSettings) {
+    |          `- note: calls to instance method 'updateSettings' from outside of its actor context are implicitly asynchronous
+ 31 |         revealDelayMilliseconds = settings.notchRevealDelayMilliseconds
+ 32 |         closeDelayMilliseconds = settings.notchCloseDelayMilliseconds
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:51:26: error: call to main actor-isolated instance method 'updateSettings' in a synchronous nonisolated context [#ActorIsolatedCall]
+45 |     }
+46 | 
+47 |     func saveSettings(_ settings: AppSettings) {
+   |          `- note: add '@MainActor' to make instance method 'saveSettings' part of global actor 'MainActor'
+48 |         self.settings = settings
+49 |         settingsStore.saveSettings(settings)
+50 |         sessionEngine.updateSettings(settings)
+51 |         notchCoordinator.updateSettings(settings)
+   |                          `- error: call to main actor-isolated instance method 'updateSettings' in a synchronous nonisolated context [#ActorIsolatedCall]
+52 |         launchAtLoginController.setEnabled(settings.launchAtLoginEnabled)
+53 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:30:10: note: calls to instance method 'updateSettings' from outside of its actor context are implicitly asynchronous
+ 28 |     }
+ 29 | 
+ 30 |     func updateSettings(_ settings: AppSettings) {
+    |          `- note: calls to instance method 'updateSettings' from outside of its actor context are implicitly asynchronous
+ 31 |         revealDelayMilliseconds = settings.notchRevealDelayMilliseconds
+ 32 |         closeDelayMilliseconds = settings.notchCloseDelayMilliseconds
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:56:26: error: main actor-isolated property 'isPresented' can not be referenced from a nonisolated context
+54 | 
+55 |     var isNotchPreviewVisible: Bool {
+56 |         notchCoordinator.isPresented
+   |                          `- error: main actor-isolated property 'isPresented' can not be referenced from a nonisolated context
+57 |     }
+58 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:26:9: note: property declared here
+ 24 |     private var dismissTask: Task<Void, Never>?
+ 25 | 
+ 26 |     var isPresented: Bool {
+    |         `- note: property declared here
+ 27 |         phase == .visible
+ 28 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:60:26: error: call to main actor-isolated instance method 'togglePinnedPresentation()' in a synchronous nonisolated context [#ActorIsolatedCall]
+57 |     }
+58 | 
+59 |     func toggleNotchPreview() {
+   |          `- note: add '@MainActor' to make instance method 'toggleNotchPreview()' part of global actor 'MainActor'
+60 |         notchCoordinator.togglePinnedPresentation()
+   |                          `- error: call to main actor-isolated instance method 'togglePinnedPresentation()' in a synchronous nonisolated context [#ActorIsolatedCall]
+61 |         synchronizeOverlayVisibility()
+62 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:35:10: note: calls to instance method 'togglePinnedPresentation()' from outside of its actor context are implicitly asynchronous
+ 33 |     }
+ 34 | 
+ 35 |     func togglePinnedPresentation() {
+    |          `- note: calls to instance method 'togglePinnedPresentation()' from outside of its actor context are implicitly asynchronous
+ 36 |         if isPinnedByCommand {
+ 37 |             hideImmediately()
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:65:26: error: call to main actor-isolated instance method 'triggerHoverChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+62 |     }
+63 | 
+64 |     func handleNotchTriggerHover(_ isHovering: Bool) {
+   |          `- note: add '@MainActor' to make instance method 'handleNotchTriggerHover' part of global actor 'MainActor'
+65 |         notchCoordinator.triggerHoverChanged(isHovering)
+   |                          `- error: call to main actor-isolated instance method 'triggerHoverChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+66 |         synchronizeOverlayVisibility()
+67 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:58:10: note: calls to instance method 'triggerHoverChanged' from outside of its actor context are implicitly asynchronous
+ 56 |     }
+ 57 | 
+ 58 |     func triggerHoverChanged(_ isHovering: Bool) {
+    |          `- note: calls to instance method 'triggerHoverChanged' from outside of its actor context are implicitly asynchronous
+ 59 |         isPointerInsideTrigger = isHovering
+ 60 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:70:26: error: call to main actor-isolated instance method 'surfaceHoverChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+67 |     }
+68 | 
+69 |     func handleNotchSurfaceHover(_ isHovering: Bool) {
+   |          `- note: add '@MainActor' to make instance method 'handleNotchSurfaceHover' part of global actor 'MainActor'
+70 |         notchCoordinator.surfaceHoverChanged(isHovering)
+   |                          `- error: call to main actor-isolated instance method 'surfaceHoverChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+71 |         synchronizeOverlayVisibility()
+72 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:68:10: note: calls to instance method 'surfaceHoverChanged' from outside of its actor context are implicitly asynchronous
+ 66 |     }
+ 67 | 
+ 68 |     func surfaceHoverChanged(_ isHovering: Bool) {
+    |          `- note: calls to instance method 'surfaceHoverChanged' from outside of its actor context are implicitly asynchronous
+ 69 |         isPointerInsideSurface = isHovering
+ 70 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:75:26: error: call to main actor-isolated instance method 'surfaceFocusChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+72 |     }
+73 | 
+74 |     func handleNotchFocus(_ isFocused: Bool) {
+   |          `- note: add '@MainActor' to make instance method 'handleNotchFocus' part of global actor 'MainActor'
+75 |         notchCoordinator.surfaceFocusChanged(isFocused)
+   |                          `- error: call to main actor-isolated instance method 'surfaceFocusChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+76 |         synchronizeOverlayVisibility()
+77 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:82:10: note: calls to instance method 'surfaceFocusChanged' from outside of its actor context are implicitly asynchronous
+ 80 |     }
+ 81 | 
+ 82 |     func surfaceFocusChanged(_ isFocused: Bool) {
+    |          `- note: calls to instance method 'surfaceFocusChanged' from outside of its actor context are implicitly asynchronous
+ 83 |         hasFocusedContent = isFocused
+ 84 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:80:26: error: call to main actor-isolated instance method 'hideImmediately()' in a synchronous nonisolated context [#ActorIsolatedCall]
+77 |     }
+78 | 
+79 |     func hideNotchPreview() {
+   |          `- note: add '@MainActor' to make instance method 'hideNotchPreview()' part of global actor 'MainActor'
+80 |         notchCoordinator.hideImmediately()
+   |                          `- error: call to main actor-isolated instance method 'hideImmediately()' in a synchronous nonisolated context [#ActorIsolatedCall]
+81 |         synchronizeOverlayVisibility()
+82 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:49:10: note: calls to instance method 'hideImmediately()' from outside of its actor context are implicitly asynchronous
+ 47 |     }
+ 48 | 
+ 49 |     func hideImmediately() {
+    |          `- note: calls to instance method 'hideImmediately()' from outside of its actor context are implicitly asynchronous
+ 50 |         cancelPendingTasks()
+ 51 |         isPinnedByCommand = false
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:85:29: error: main actor-isolated property 'isPresented' can not be referenced from a nonisolated context
+82 |     }
+83 | 
+84 |     private func synchronizeOverlayVisibility() {
+   |                  `- note: add '@MainActor' to make instance method 'synchronizeOverlayVisibility()' part of global actor 'MainActor'
+85 |         if notchCoordinator.isPresented {
+   |                             `- error: main actor-isolated property 'isPresented' can not be referenced from a nonisolated context
+86 |             overlayController.showPreview()
+87 |         } else {
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:26:9: note: property declared here
+ 24 |     private var dismissTask: Task<Void, Never>?
+ 25 | 
+ 26 |     var isPresented: Bool {
+    |         `- note: property declared here
+ 27 |         phase == .visible
+ 28 |     }
+
+[#ActorIsolatedCall]: <https://docs.swift.org/compiler/documentation/diagnostics/actor-isolated-call>
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:5: error: 'lazy' cannot be used on a computed property
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |     `- error: 'lazy' cannot be used on a computed property
+17 | 
+18 |     init(
+
+macro expansion @ObservationTracked:2:6: error: init accessor cannot refer to property '_commandRouter'; init accessors can refer only to stored properties
+`- /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:63: note: expanded code originates here
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   +--- macro expansion @ObservationTracked ----------------------------
+   | 1 | {
+   | 2 |     @storageRestrictions(initializes: _commandRouter)
+   |   |      `- error: init accessor cannot refer to property '_commandRouter'; init accessors can refer only to stored properties
+   | 3 |     init(initialValue) {
+   | 4 |       _commandRouter = initialValue
+   +--------------------------------------------------------------------
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:30: error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |                              `- error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Commands/AppCommandRouter.swift:7:5: note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 5 |     private unowned let container: AppContainer
+ 6 | 
+ 7 |     init(container: AppContainer) {
+   |     `- note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 8 |         self.container = container
+ 9 |     }
+
+macro expansion @ObservationTracked:3:33: error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+`- /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:63: note: expanded code originates here
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   +--- macro expansion @ObservationTracked ----------------------------
+   |1 | @ObservationIgnored private
+   |2 | 
+   |3 |     lazy  var _commandRouter  = AppCommandRouter(container: self)
+   |  |                                 `- error: call to main actor-isolated initializer 'init(container:)' in a synchronous nonisolated context [#ActorIsolatedCall]
+   +--------------------------------------------------------------------
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Core/Commands/AppCommandRouter.swift:7:5: note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 5 |     private unowned let container: AppContainer
+ 6 | 
+ 7 |     init(container: AppContainer) {
+   |     `- note: calls to initializer 'init(container:)' from outside of its actor context are implicitly asynchronous
+ 8 |         self.container = container
+ 9 |     }
+
+macro expansion @ObservationTracked:4:7: error: cannot reference instance member '_commandRouter'; init accessors can only refer to instance properties listed in 'initializes' and 'accesses' attributes
+`- /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:63: note: expanded code originates here
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   +--- macro expansion @ObservationTracked ----------------------------
+   | 2 |     @storageRestrictions(initializes: _commandRouter)
+   | 3 |     init(initialValue) {
+   | 4 |       _commandRouter = initialValue
+   |   |       `- error: cannot reference instance member '_commandRouter'; init accessors can only refer to instance properties listed in 'initializes' and 'accesses' attributes
+   | 5 |     }
+   | 6 |     get {
+   +--------------------------------------------------------------------
+17 | 
+18 |     init(
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:32:33: error: call to main actor-isolated initializer 'init()' in a synchronous nonisolated context [#ActorIsolatedCall]
+30 |         self.settings = settingsStore.loadSettings()
+31 |         self.selectedSection = sectionRegistry.sections.first ?? .overview
+32 |         self.notchCoordinator = NotchOverlayCoordinator()
+   |                                 `- error: call to main actor-isolated initializer 'init()' in a synchronous nonisolated context [#ActorIsolatedCall]
+33 |         self.sessionEngine = SessionEngine(
+34 |             sessionStore: sessionStore,
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:6:13: note: calls to initializer 'init()' from outside of its actor context are implicitly asynchronous
+  4 | @MainActor
+  5 | @Observable
+  6 | final class NotchOverlayCoordinator {
+    |             `- note: calls to initializer 'init()' from outside of its actor context are implicitly asynchronous
+  7 |     enum PresentationPhase: String {
+  8 |         case hidden
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:39:26: error: main actor-isolated property 'onPresentationChanged' can not be mutated from a nonisolated context
+37 |         )
+38 | 
+39 |         notchCoordinator.onPresentationChanged = { [weak self] in
+   |                          `- error: main actor-isolated property 'onPresentationChanged' can not be mutated from a nonisolated context
+40 |             self?.synchronizeOverlayVisibility()
+41 |         }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:15:9: note: mutation of this property is only permitted within the actor
+ 13 |     private(set) var phase: PresentationPhase = .hidden
+ 14 |     private(set) var isPinnedByCommand = false
+ 15 |     var onPresentationChanged: (() -> Void)?
+    |         `- note: mutation of this property is only permitted within the actor
+ 16 | 
+ 17 |     var revealDelayMilliseconds = 120
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:42:26: error: call to main actor-isolated instance method 'updateSettings' in a synchronous nonisolated context [#ActorIsolatedCall]
+40 |             self?.synchronizeOverlayVisibility()
+41 |         }
+42 |         notchCoordinator.updateSettings(settings)
+   |                          `- error: call to main actor-isolated instance method 'updateSettings' in a synchronous nonisolated context [#ActorIsolatedCall]
+43 |         notificationService.requestAuthorizationIfNeeded()
+44 |         synchronizeOverlayVisibility()
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:30:10: note: calls to instance method 'updateSettings' from outside of its actor context are implicitly asynchronous
+ 28 |     }
+ 29 | 
+ 30 |     func updateSettings(_ settings: AppSettings) {
+    |          `- note: calls to instance method 'updateSettings' from outside of its actor context are implicitly asynchronous
+ 31 |         revealDelayMilliseconds = settings.notchRevealDelayMilliseconds
+ 32 |         closeDelayMilliseconds = settings.notchCloseDelayMilliseconds
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:51:26: error: call to main actor-isolated instance method 'updateSettings' in a synchronous nonisolated context [#ActorIsolatedCall]
+45 |     }
+46 | 
+47 |     func saveSettings(_ settings: AppSettings) {
+   |          `- note: add '@MainActor' to make instance method 'saveSettings' part of global actor 'MainActor'
+48 |         self.settings = settings
+49 |         settingsStore.saveSettings(settings)
+50 |         sessionEngine.updateSettings(settings)
+51 |         notchCoordinator.updateSettings(settings)
+   |                          `- error: call to main actor-isolated instance method 'updateSettings' in a synchronous nonisolated context [#ActorIsolatedCall]
+52 |         launchAtLoginController.setEnabled(settings.launchAtLoginEnabled)
+53 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:30:10: note: calls to instance method 'updateSettings' from outside of its actor context are implicitly asynchronous
+ 28 |     }
+ 29 | 
+ 30 |     func updateSettings(_ settings: AppSettings) {
+    |          `- note: calls to instance method 'updateSettings' from outside of its actor context are implicitly asynchronous
+ 31 |         revealDelayMilliseconds = settings.notchRevealDelayMilliseconds
+ 32 |         closeDelayMilliseconds = settings.notchCloseDelayMilliseconds
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:56:26: error: main actor-isolated property 'isPresented' can not be referenced from a nonisolated context
+54 | 
+55 |     var isNotchPreviewVisible: Bool {
+56 |         notchCoordinator.isPresented
+   |                          `- error: main actor-isolated property 'isPresented' can not be referenced from a nonisolated context
+57 |     }
+58 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:26:9: note: property declared here
+ 24 |     private var dismissTask: Task<Void, Never>?
+ 25 | 
+ 26 |     var isPresented: Bool {
+    |         `- note: property declared here
+ 27 |         phase == .visible
+ 28 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:60:26: error: call to main actor-isolated instance method 'togglePinnedPresentation()' in a synchronous nonisolated context [#ActorIsolatedCall]
+57 |     }
+58 | 
+59 |     func toggleNotchPreview() {
+   |          `- note: add '@MainActor' to make instance method 'toggleNotchPreview()' part of global actor 'MainActor'
+60 |         notchCoordinator.togglePinnedPresentation()
+   |                          `- error: call to main actor-isolated instance method 'togglePinnedPresentation()' in a synchronous nonisolated context [#ActorIsolatedCall]
+61 |         synchronizeOverlayVisibility()
+62 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:35:10: note: calls to instance method 'togglePinnedPresentation()' from outside of its actor context are implicitly asynchronous
+ 33 |     }
+ 34 | 
+ 35 |     func togglePinnedPresentation() {
+    |          `- note: calls to instance method 'togglePinnedPresentation()' from outside of its actor context are implicitly asynchronous
+ 36 |         if isPinnedByCommand {
+ 37 |             hideImmediately()
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:65:26: error: call to main actor-isolated instance method 'triggerHoverChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+62 |     }
+63 | 
+64 |     func handleNotchTriggerHover(_ isHovering: Bool) {
+   |          `- note: add '@MainActor' to make instance method 'handleNotchTriggerHover' part of global actor 'MainActor'
+65 |         notchCoordinator.triggerHoverChanged(isHovering)
+   |                          `- error: call to main actor-isolated instance method 'triggerHoverChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+66 |         synchronizeOverlayVisibility()
+67 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:58:10: note: calls to instance method 'triggerHoverChanged' from outside of its actor context are implicitly asynchronous
+ 56 |     }
+ 57 | 
+ 58 |     func triggerHoverChanged(_ isHovering: Bool) {
+    |          `- note: calls to instance method 'triggerHoverChanged' from outside of its actor context are implicitly asynchronous
+ 59 |         isPointerInsideTrigger = isHovering
+ 60 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:70:26: error: call to main actor-isolated instance method 'surfaceHoverChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+67 |     }
+68 | 
+69 |     func handleNotchSurfaceHover(_ isHovering: Bool) {
+   |          `- note: add '@MainActor' to make instance method 'handleNotchSurfaceHover' part of global actor 'MainActor'
+70 |         notchCoordinator.surfaceHoverChanged(isHovering)
+   |                          `- error: call to main actor-isolated instance method 'surfaceHoverChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+71 |         synchronizeOverlayVisibility()
+72 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:68:10: note: calls to instance method 'surfaceHoverChanged' from outside of its actor context are implicitly asynchronous
+ 66 |     }
+ 67 | 
+ 68 |     func surfaceHoverChanged(_ isHovering: Bool) {
+    |          `- note: calls to instance method 'surfaceHoverChanged' from outside of its actor context are implicitly asynchronous
+ 69 |         isPointerInsideSurface = isHovering
+ 70 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:75:26: error: call to main actor-isolated instance method 'surfaceFocusChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+72 |     }
+73 | 
+74 |     func handleNotchFocus(_ isFocused: Bool) {
+   |          `- note: add '@MainActor' to make instance method 'handleNotchFocus' part of global actor 'MainActor'
+75 |         notchCoordinator.surfaceFocusChanged(isFocused)
+   |                          `- error: call to main actor-isolated instance method 'surfaceFocusChanged' in a synchronous nonisolated context [#ActorIsolatedCall]
+76 |         synchronizeOverlayVisibility()
+77 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:82:10: note: calls to instance method 'surfaceFocusChanged' from outside of its actor context are implicitly asynchronous
+ 80 |     }
+ 81 | 
+ 82 |     func surfaceFocusChanged(_ isFocused: Bool) {
+    |          `- note: calls to instance method 'surfaceFocusChanged' from outside of its actor context are implicitly asynchronous
+ 83 |         hasFocusedContent = isFocused
+ 84 | 
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:80:26: error: call to main actor-isolated instance method 'hideImmediately()' in a synchronous nonisolated context [#ActorIsolatedCall]
+77 |     }
+78 | 
+79 |     func hideNotchPreview() {
+   |          `- note: add '@MainActor' to make instance method 'hideNotchPreview()' part of global actor 'MainActor'
+80 |         notchCoordinator.hideImmediately()
+   |                          `- error: call to main actor-isolated instance method 'hideImmediately()' in a synchronous nonisolated context [#ActorIsolatedCall]
+81 |         synchronizeOverlayVisibility()
+82 |     }
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:49:10: note: calls to instance method 'hideImmediately()' from outside of its actor context are implicitly asynchronous
+ 47 |     }
+ 48 | 
+ 49 |     func hideImmediately() {
+    |          `- note: calls to instance method 'hideImmediately()' from outside of its actor context are implicitly asynchronous
+ 50 |         cancelPendingTasks()
+ 51 |         isPinnedByCommand = false
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:85:29: error: main actor-isolated property 'isPresented' can not be referenced from a nonisolated context
+82 |     }
+83 | 
+84 |     private func synchronizeOverlayVisibility() {
+   |                  `- note: add '@MainActor' to make instance method 'synchronizeOverlayVisibility()' part of global actor 'MainActor'
+85 |         if notchCoordinator.isPresented {
+   |                             `- error: main actor-isolated property 'isPresented' can not be referenced from a nonisolated context
+86 |             overlayController.showPreview()
+87 |         } else {
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchOverlayCoordinator.swift:26:9: note: property declared here
+ 24 |     private var dismissTask: Task<Void, Never>?
+ 25 | 
+ 26 |     var isPresented: Bool {
+    |         `- note: property declared here
+ 27 |         phase == .visible
+ 28 |     }
+
+[#ActorIsolatedCall]: <https://docs.swift.org/compiler/documentation/diagnostics/actor-isolated-call>
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:16:5: error: 'lazy' cannot be used on a computed property
+14 |     var selectedSection: DashboardSection
+15 | 
+16 |     lazy var commandRouter = AppCommandRouter(container: self)
+   |     `- error: 'lazy' cannot be used on a computed property
+17 | 
+18 |     init(
+[17/20] Compiling MacBookNotchTracker OverlayPreviewController.swift

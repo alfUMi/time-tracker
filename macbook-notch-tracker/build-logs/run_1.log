@@ -1,0 +1,123 @@
+Building for debugging...
+[1/1] Write swift-version--58304C5D6DBC2206.txt
+Build of product 'MacBookNotchTracker' complete! (0.07s)
+
+💣 Program crashed: Bad pointer dereference at 0x000000016b383ff0
+
+Platform: arm64 macOS 26.5 (25F71)
+
+Thread 0 crashed:
+
+    0 0x00000001806774e0 __CFStrAllocateMutableContents + 76 in CoreFoundation
+    1 0x0000000180692db4 __CFStringAppendBytes + 624 in CoreFoundation
+    2 0x00000001806913c8 __CFStringAppendFormatCore + 7856 in CoreFoundation
+    3 0x00000001807c83bc _CFStringCreateWithFormatAndArgumentsReturningMetadata + 184 in CoreFoundation
+    4 0x00000001806d9020 CFStringCreateWithFormatAndArguments + 164 in CoreFoundation
+    5 0x000000018068f4b8 CFStringCreateWithFormat + 48 in CoreFoundation
+    6 0x0000000180714c50 +[NSObject(NSObject) description] + 56 in CoreFoundation
+    7 0x0000000181eddab8 _NSDescriptionWithLocaleFunc + 80 in Foundation
+    8 0x00000001807ccb80 __CFSTRING_IS_CALLING_OUT_TO_AN_OBJECT_FORMAT_ARGUMENT_WITH_LOCALE__ + 28 in CoreFoundation
+    9 0x0000000180691ba8 __CFStringAppendFormatCore + 9872 in CoreFoundation
+   10 0x00000001807c83bc _CFStringCreateWithFormatAndArgumentsReturningMetadata + 184 in CoreFoundation
+   11 0x000000018068f50c _CFStringCreateWithFormatAndArgumentsAux2 + 44 in CoreFoundation
+   12 0x0000000181eebac8 +[NSString stringWithFormat:] + 68 in Foundation
+   13 0x000000018584dfdc -[NSWindow _publicDescription] + 76 in AppKit
+   14 0x0000000184b521d8 -[NSWindow _setFrameCommon:display:fromServer:] + 196 in AppKit
+   15 IslandSceneController.repositionSurfaceWindow() + 236 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:196:23
+
+   194│         guard let surfaceWindow else { return }
+   195│ 
+   196│         surfaceWindow.setFrame(runtimeModel.displayGeometry.surfaceFrame, display: true)                                                         
+      │                       ▲
+   197│         hostingView?.frame = CGRect(origin: .zero, size: runtimeModel.displayGeometry.surfaceFrame.size)
+   198│         updateHotzoneHover(using: NSEvent.mouseLocation)
+
+   16 IslandSceneController.updateSceneState(_:) + 476 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:109:9
+
+   107│         }
+   108│ 
+   109│         repositionSurfaceWindow()                                                                                                                
+      │         ▲
+   110│         surfaceWindow.orderFrontRegardless()
+   111│     }
+
+   17 AppContainer.synchronizeIslandScene() + 132 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:95:31
+
+    93│ 
+    94│     private func synchronizeIslandScene() {
+    95│         islandSceneController.updateSceneState(islandStateMachine.sceneState)                                                                    
+      │                               ▲
+    96│     }
+    97│ }
+
+   18 AppContainer.handleIslandHotzone(_:) + 96 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:76:9
+
+    74│     func handleIslandHotzone(_ isHovering: Bool) {
+    75│         islandStateMachine.hotzoneHoverChanged(isHovering)
+    76│         synchronizeIslandScene()                                                                                                                 
+      │         ▲
+    77│     }
+    78│
+
+   19 IslandSceneController.updateHotzoneHover(using:) + 504 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:210:19
+
+   208│         )
+   209│ 
+   210│         container.handleIslandHotzone(hotzone.contains(screenLocation))                                                                          
+      │                   ▲
+   211│     }
+   212│
+
+   20 IslandSceneController.repositionSurfaceWindow() + 492 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:198:9
+
+   196│         surfaceWindow.setFrame(runtimeModel.displayGeometry.surfaceFrame, display: true)
+   197│         hostingView?.frame = CGRect(origin: .zero, size: runtimeModel.displayGeometry.surfaceFrame.size)
+   198│         updateHotzoneHover(using: NSEvent.mouseLocation)                                                                                         
+      │         ▲
+   199│     }
+   200│
+
+   21 IslandSceneController.updateSceneState(_:) + 476 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:109:9
+   22 AppContainer.synchronizeIslandScene() + 132 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:95:31
+   23 AppContainer.handleIslandHotzone(_:) + 96 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:76:9
+   24 IslandSceneController.updateHotzoneHover(using:) + 504 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:210:19
+   25 IslandSceneController.repositionSurfaceWindow() + 492 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:198:9
+   26 IslandSceneController.updateSceneState(_:) + 476 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:109:9
+   27 AppContainer.synchronizeIslandScene() + 132 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:95:31
+   28 AppContainer.handleIslandHotzone(_:) + 96 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:76:9
+   29 IslandSceneController.updateHotzoneHover(using:) + 504 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:210:19
+   30 IslandSceneController.repositionSurfaceWindow() + 492 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:198:9
+   31 IslandSceneController.updateSceneState(_:) + 476 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:109:9
+   32 AppContainer.synchronizeIslandScene() + 132 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:95:31
+   33 AppContainer.handleIslandHotzone(_:) + 96 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:76:9
+   34 IslandSceneController.updateHotzoneHover(using:) + 504 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:210:19
+   35 IslandSceneController.repositionSurfaceWindow() + 492 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:198:9
+   36 IslandSceneController.updateSceneState(_:) + 476 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:109:9
+   37 AppContainer.synchronizeIslandScene() + 132 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:95:31
+   38 AppContainer.handleIslandHotzone(_:) + 96 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:76:9
+   39 IslandSceneController.updateHotzoneHover(using:) + 504 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:210:19
+   40 IslandSceneController.repositionSurfaceWindow() + 492 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:198:9
+   41 IslandSceneController.updateSceneState(_:) + 476 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:109:9
+  ... 
+19216 IslandSceneController.repositionSurfaceWindow() + 492 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:198:9
+19217 IslandSceneController.updateSceneState(_:) + 476 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:109:9
+19218 AppContainer.synchronizeIslandScene() + 132 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:95:31
+19219 AppContainer.handleIslandHotzone(_:) + 96 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/App/AppContainer.swift:76:9
+19220 IslandSceneController.updateHotzoneHover(using:) + 504 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:210:19
+19221 IslandSceneController.repositionSurfaceWindow() + 492 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:198:9
+19222 IslandSceneController.updateSceneState(_:) + 476 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:109:9
+19223 IslandSceneController.install(container:) + 356 in MacBookNotchTracker at /Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Platform/Windowing/IslandSceneController.swift:85:9
+
+    83│         installEventMonitors()
+    84│         installHoverTracking()
+    85│         updateSceneState(runtimeModel.sceneState)                                                                                                
+      │         ▲
+    86│ 
+    87│         screenObserver = NotificationCenter.default.addObserver(
+
+19224 0x00000001b5ad0334 static App.main() + 208 in SwiftUI
+  ... 
+
+Backtrace took 0.21s
+
+zsh: segmentation fault  swift run

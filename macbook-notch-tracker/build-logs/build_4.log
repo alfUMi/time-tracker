@@ -1,0 +1,17 @@
+Building for debugging...
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchPreviewView.swift:191:48: error: type 'ButtonStyle' has no member 'borderedProminent'
+189 |                 .frame(maxWidth: .infinity)
+190 |         }
+191 |         .buttonStyle(prominence == .primary ? .borderedProminent : .bordered)
+    |                                                `- error: type 'ButtonStyle' has no member 'borderedProminent'
+192 |         .tint(tint)
+193 |         .controlSize(.regular)
+
+/Users/envis/projects/time-tracker/macbook-notch-tracker/Sources/MacBookNotchTracker/Features/Notch/NotchPreviewView.swift:191:69: error: type 'ButtonStyle' has no member 'bordered'
+189 |                 .frame(maxWidth: .infinity)
+190 |         }
+191 |         .buttonStyle(prominence == .primary ? .borderedProminent : .bordered)
+    |                                                                     `- error: type 'ButtonStyle' has no member 'bordered'
+192 |         .tint(tint)
+193 |         .controlSize(.regular)
+[16/18] Compiling MacBookNotchTracker AppContainer.swift
