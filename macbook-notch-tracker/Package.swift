@@ -8,15 +8,18 @@ let package = Package(
         .macOS(.v14)
     ],
     products: [
-        .executable(
-            name: "MacBookNotchTracker",
-            targets: ["MacBookNotchTracker"]
+        .library(
+            name: "MacBookNotchTrackerSupport",
+            targets: ["MacBookNotchTrackerSupport"]
         )
     ],
     targets: [
-        .executableTarget(
-            name: "MacBookNotchTracker",
-            path: "Sources/MacBookNotchTracker"
+        .target(
+            name: "MacBookNotchTrackerSupport",
+            path: "Sources/MacBookNotchTracker",
+            exclude: [
+                "App/MacBookNotchTrackerApp.swift"
+            ]
         )
     ]
 )

@@ -18,7 +18,9 @@ This directory contains the planning package for a new native macOS app that com
 
 ## Source Scaffold
 
-- `Package.swift` - Swift package entry point for the native macOS scaffold
+- `Package.swift` - shared support library manifest; no longer the runnable app entry point
+- `MacBookNotchTracker.xcodeproj` - native macOS app project that builds a launchable `.app` bundle
+- `Info.plist` - native app bundle metadata used by the app target
 - `Sources/MacBookNotchTracker/App/` - app entry and shared dependency container
 - `Sources/MacBookNotchTracker/Core/` - commands, models, persistence protocols, and session engine
 - `Sources/MacBookNotchTracker/Features/` - dashboard, notch, menu bar, and settings surfaces
@@ -34,3 +36,9 @@ This directory contains the planning package for a new native macOS app that com
 This plan assumes the new product keeps the same core domain as the current project: a time-tracking and productivity utility.
 
 If you want the notch-and-dashboard shell to support a different app concept later, the platform plan still holds and the domain modules can be swapped.
+
+## Launch Path
+
+Use `MacBookNotchTracker.xcodeproj` as the native GUI app entry point.
+
+The Swift package remains in the repository for shared source organization, but it no longer defines a runnable executable. The `.xcodeproj` is now the intended app-bundle packaging path for Finder, Dock, and Spotlight style launching.

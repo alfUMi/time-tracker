@@ -30,7 +30,14 @@ struct MenuBarContentView: View {
 
     private func openDashboard() {
         container.commandRouter.dispatch(.openDashboard)
+        let didFocusExistingWindow = container.focusDashboardWindow()
 
-        openWindow(id: AppWindowID.dashboard)
+        if !didFocusExistingWindow {
+            openWindow(id: AppWindowID.dashboard)
+        }
+
+        DispatchQueue.main.async {
+            container.focusDashboardWindow()
+        }
     }
 }

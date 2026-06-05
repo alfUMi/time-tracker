@@ -1,9 +1,5 @@
 import SwiftUI
 
-enum AppWindowID {
-    static let dashboard = "dashboard"
-}
-
 @MainActor
 @main
 struct MacBookNotchTrackerApp: App {

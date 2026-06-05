@@ -97,7 +97,7 @@ struct IslandRendererView: View {
 
                 Spacer(minLength: 8)
 
-                Text(timerText)
+                IslandLiveDurationText(activeSession: container.sessionEngine.activeSession)
                     .font(.system(size: 13, weight: .semibold))
                     .monospacedDigit()
                     .foregroundStyle(DesignTokens.Colors.textPrimary)
@@ -115,14 +115,6 @@ struct IslandRendererView: View {
         return container.sessionEngine.currentState.title
     }
 
-    private var timerText: String {
-        guard let activeSession = container.sessionEngine.activeSession else {
-            return "00:00:00"
-        }
-
-        return Date.now.timeIntervalSince(activeSession.startedAt).formattedDuration
-    }
-
     private var compactActionRow: some View {
         HStack(spacing: DesignTokens.Spacing.xs) {
             workActionButton
@@ -137,8 +129,15 @@ struct IslandRendererView: View {
 
     private func openDashboard() {
         container.commandRouter.dispatch(.openDashboard)
+        let didFocusExistingWindow = container.focusDashboardWindow()
 
-        openWindow(id: AppWindowID.dashboard)
+        if !didFocusExistingWindow {
+            openWindow(id: AppWindowID.dashboard)
+        }
+
+        DispatchQueue.main.async {
+            container.focusDashboardWindow()
+        }
     }
 
     @ViewBuilder
@@ -214,6 +213,24 @@ struct IslandRendererView: View {
         .opacity(isDisabled ? 0.46 : 1)
         .accessibilityLabel(label)
         .help(label)
+    }
+}
+
+private struct IslandLiveDurationText: View {
+    let activeSession: ActiveSession?
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { timeline in
+            Text(durationString(for: timeline.date))
+        }
+    }
+
+    private func durationString(for date: Date) -> String {
+        guard let activeSession else {
+            return "00:00:00"
+        }
+
+        return max(0, date.timeIntervalSince(activeSession.startedAt)).formattedDuration
     }
 }
 

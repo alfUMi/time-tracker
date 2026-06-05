@@ -1,3 +1,4 @@
+import AppKit
 import Charts
 import SwiftUI
 
@@ -15,6 +16,7 @@ struct DashboardRootView: View {
         }
         .tint(DesignTokens.Colors.accentBlue)
         .background(GlassBackgroundView())
+        .background(DashboardWindowFocusBridge())
     }
 
     private var selectionBinding: Binding<DashboardSection?> {
@@ -25,6 +27,34 @@ struct DashboardRootView: View {
                 container.commandRouter.dispatch(.selectDashboardSection(newValue))
             }
         )
+    }
+}
+
+private struct DashboardWindowFocusBridge: NSViewRepresentable {
+    func makeNSView(context: Context) -> DashboardWindowFocusNSView {
+        DashboardWindowFocusNSView()
+    }
+
+    func updateNSView(_ nsView: DashboardWindowFocusNSView, context: Context) {}
+}
+
+private final class DashboardWindowFocusNSView: NSView {
+    private weak var observedWindow: NSWindow?
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+
+        guard window !== observedWindow else { return }
+        observedWindow = window
+
+        DispatchQueue.main.async { [weak self] in
+            guard let window = self?.window else { return }
+
+            window.identifier = NSUserInterfaceItemIdentifier(AppWindowID.dashboard)
+            NSApp.activate(ignoringOtherApps: true)
+            window.makeKeyAndOrderFront(nil)
+            window.makeFirstResponder(window.contentView)
+        }
     }
 }
 
@@ -74,8 +104,6 @@ private struct DashboardDetailView: View {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xl) {
                 DashboardHeader(section: section)
 
-                CurrentSessionPanel()
-
                 switch section.id {
                 case DashboardSection.history.id:
                     HistoryWorkspaceView()
@@ -84,6 +112,8 @@ private struct DashboardDetailView: View {
                 case DashboardSection.settings.id:
                     SettingsWorkspaceView()
                 default:
+                    CurrentSessionPanel()
+
                     OverviewWorkspaceView()
                 }
             }
@@ -120,14 +150,7 @@ private struct DashboardHeader: View {
 
             Spacer()
 
-            HStack(spacing: DesignTokens.Spacing.sm) {
-                DashboardStateChip(state: container.sessionEngine.currentState)
-
-                Button(container.isNotchPreviewVisible ? "Hide Notch Surface" : "Pin Notch Surface") {
-                    container.commandRouter.dispatch(.toggleNotchPreview)
-                }
-                .buttonStyle(GlassButtonStyle(prominence: .secondary(DesignTokens.Colors.textSecondary)))
-            }
+            DashboardStateChip(state: container.sessionEngine.currentState)
         }
     }
 
@@ -140,7 +163,7 @@ private struct DashboardHeader: View {
         case DashboardSection.settings.id:
             "Tune startup, reminders, and notch behavior."
         default:
-            "Live activity and trends at a glance."
+            "Current situation and charts for today."
         }
     }
 }
@@ -180,186 +203,34 @@ private struct CurrentSessionPanel: View {
                 }
             }
 
-            SessionActionRow()
-
             LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 180), spacing: DesignTokens.Spacing.md)],
+                columns: Array(
+                    repeating: GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
+                    count: 3
+                ),
                 alignment: .leading,
                 spacing: DesignTokens.Spacing.md
             ) {
-                MetricTile(title: "Today Tracked", value: container.sessionEngine.summary(for: .day).totalTracked.formattedDuration)
-                MetricTile(title: "This Week", value: container.sessionEngine.summary(for: .week).totalTracked.formattedDuration)
-                MetricTile(title: "Sessions This Month", value: "\(container.sessionEngine.summary(for: .month).sessionsCount)")
+                MetricTile(title: "Today Tracked", value: todaySummary.totalTracked.formattedDuration)
+                MetricTile(title: "Today Break", value: todaySummary.totalBreak.formattedDuration)
+                MetricTile(title: "Today Sessions", value: "\(todaySummary.sessionsCount)")
             }
         }
         .panelCardStyle()
     }
 
-}
-
-private struct SessionActionRow: View {
-    @Environment(AppContainer.self) private var container
-
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: DesignTokens.Spacing.sm), count: 3)
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            if isWorkingLike {
-                Button {
-                    container.commandRouter.dispatch(.pauseSession)
-                } label: {
-                    Label("Pause", systemImage: "pause.fill")
-                }
-                .buttonStyle(GlassButtonStyle(prominence: .secondary(DesignTokens.Colors.textSecondary)))
-                .frame(maxWidth: 140)
-            }
-
-            LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.sm) {
-                dashboardControlButton(
-                    label: isPaused ? "Resume" : "Start",
-                    symbol: "play.fill",
-                    tint: DesignTokens.Colors.accentBlue,
-                    prominence: isIdle || isPaused ? .primary(DesignTokens.Colors.accentBlue) : .secondary(DesignTokens.Colors.accentBlue),
-                    isDisabled: !(isIdle || isPaused)
-                ) {
-                    if isPaused {
-                        container.commandRouter.dispatch(.resumeSession)
-                    } else {
-                        container.commandRouter.dispatch(.startSession(taskLabel: "Deep Work"))
-                    }
-                }
-
-                dashboardControlButton(
-                    label: "Stop",
-                    symbol: "stop.fill",
-                    tint: DesignTokens.Colors.accentRed,
-                    prominence: .primary(DesignTokens.Colors.accentRed),
-                    isDisabled: isIdle
-                ) {
-                    container.commandRouter.dispatch(.stopSession)
-                }
-
-                dashboardControlButton(
-                    label: "Start Break",
-                    symbol: "cup.and.saucer.fill",
-                    tint: DesignTokens.Colors.accentMint,
-                    prominence: .secondary(DesignTokens.Colors.accentMint),
-                    isDisabled: !(isRunning || isExtended)
-                ) {
-                    container.commandRouter.dispatch(.startBreak)
-                }
-
-                dashboardControlButton(
-                    label: "End Break",
-                    symbol: "play.fill",
-                    tint: DesignTokens.Colors.accentMint,
-                    prominence: isOnBreak ? .primary(DesignTokens.Colors.accentMint) : .secondary(DesignTokens.Colors.accentMint),
-                    isDisabled: !isOnBreak
-                ) {
-                    container.commandRouter.dispatch(.endBreak)
-                }
-
-                dashboardControlButton(
-                    label: "Extend",
-                    symbol: "forward.fill",
-                    tint: DesignTokens.Colors.accentAmber,
-                    prominence: .secondary(DesignTokens.Colors.accentAmber),
-                    isDisabled: !isRunning
-                ) {
-                    container.commandRouter.dispatch(.extendSession)
-                }
-
-                dashboardControlButton(
-                    label: "Dashboard",
-                    symbol: "rectangle.grid.2x2",
-                    tint: DesignTokens.Colors.textSecondary,
-                    prominence: .secondary(DesignTokens.Colors.textSecondary),
-                    isDisabled: false
-                ) {
-                    container.commandRouter.dispatch(.openDashboard)
-                }
-            }
-        }
-    }
-
-    private var isIdle: Bool { container.sessionEngine.currentState == .idle }
-    private var isRunning: Bool { container.sessionEngine.currentState == .running }
-    private var isExtended: Bool { container.sessionEngine.currentState == .extended }
-    private var isPaused: Bool { container.sessionEngine.currentState == .paused }
-    private var isOnBreak: Bool { container.sessionEngine.currentState == .onBreak }
-    private var isWorkingLike: Bool { isRunning || isExtended }
-
-    private func dashboardControlButton(
-        label: String,
-        symbol: String,
-        tint: Color,
-        prominence: GlassButtonStyle.Prominence,
-        isDisabled: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Label(label, systemImage: symbol)
-                .lineLimit(1)
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(GlassButtonStyle(prominence: prominence))
-        .disabled(isDisabled)
-        .opacity(isDisabled ? 0.46 : 1)
+    private var todaySummary: SessionSummary {
+        container.sessionEngine.summary(for: .day)
     }
 }
 
 private struct OverviewWorkspaceView: View {
     @Environment(AppContainer.self) private var container
 
-    @State private var selectedRange: SummaryRange = .week
-
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
-            DashboardSectionCard(title: "Overview", subtitle: "Live totals") {
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
-                    Picker("Range", selection: $selectedRange) {
-                        ForEach(SummaryRange.allCases) { range in
-                            Text(range.title).tag(range)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
-                    LazyVGrid(
-                        columns: [GridItem(.adaptive(minimum: 180), spacing: DesignTokens.Spacing.md)],
-                        alignment: .leading,
-                        spacing: DesignTokens.Spacing.md
-                    ) {
-                        MetricTile(title: "Today", value: container.sessionEngine.summary(for: .day).totalTracked.formattedDuration)
-                        MetricTile(title: "This Week", value: container.sessionEngine.summary(for: .week).totalTracked.formattedDuration)
-                        MetricTile(title: "This Month", value: container.sessionEngine.summary(for: .month).totalTracked.formattedDuration)
-                        MetricTile(title: "Range Sessions", value: "\(container.sessionEngine.summary(for: selectedRange).sessionsCount)")
-                    }
-                }
-            }
-
-            HStack(alignment: .top, spacing: DesignTokens.Spacing.lg) {
-                DashboardSectionCard(title: "Activity", subtitle: "Tracked vs break time") {
-                    DashboardActivityChart(points: container.sessionEngine.chartPoints(for: selectedRange))
-                }
-
-                DashboardSectionCard(title: "Composition", subtitle: "Time split") {
-                    DashboardCompositionChart(summary: container.sessionEngine.summary(for: selectedRange))
-                }
-            }
-
-            DashboardSectionCard(title: "Recent Sessions", subtitle: "Latest records") {
-                if container.sessionEngine.recentHistory().isEmpty {
-                    EmptyDashboardState(
-                        title: "No sessions yet",
-                        message: "Start a session from the card above and your first records will appear here."
-                    )
-                } else {
-                    VStack(spacing: DesignTokens.Spacing.sm) {
-                        ForEach(container.sessionEngine.recentHistory()) { record in
-                            HistoryRow(record: record, showsActions: false, onEdit: {}, onDelete: {})
-                        }
-                    }
-                }
+            DashboardSectionCard(title: "Activity", subtitle: "Today by time") {
+                DashboardActivityChart(points: container.sessionEngine.chartPoints(for: .day))
             }
         }
     }
@@ -416,17 +287,30 @@ private struct HistoryWorkspaceView: View {
                         message: "Adjust the range, state, or search term to widen the history results."
                     )
                 } else {
-                    VStack(spacing: DesignTokens.Spacing.sm) {
+                    VStack(spacing: 0) {
                         historyTableHeader
 
-                        ForEach(filteredRecords) { record in
+                        historyTableDivider
+
+                        ForEach(Array(filteredRecords.enumerated()), id: \.element.id) { index, record in
                             HistoryRow(record: record, showsActions: true) {
                                 editingRecord = record
                             } onDelete: {
                                 pendingDeletion = record
                             }
+
+                            if index < filteredRecords.count - 1 {
+                                historyTableDivider
+                                    .padding(.leading, DesignTokens.Spacing.md)
+                            }
                         }
                     }
+                    .background(DesignTokens.Colors.surfaceRaised.opacity(0.42))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignTokens.Radius.large, style: .continuous)
+                            .stroke(DesignTokens.Colors.border, lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.large, style: .continuous))
                 }
             }
         }
@@ -479,7 +363,8 @@ private struct HistoryWorkspaceView: View {
             headerCell("Actions", width: 150, alignment: .trailing)
         }
         .padding(.horizontal, DesignTokens.Spacing.md)
-        .padding(.bottom, DesignTokens.Spacing.xs)
+        .padding(.vertical, DesignTokens.Spacing.md)
+        .background(DesignTokens.Colors.surfaceRaised.opacity(0.72))
     }
 
     private func headerCell(_ title: String, width: CGFloat?, alignment: Alignment) -> some View {
@@ -489,12 +374,19 @@ private struct HistoryWorkspaceView: View {
             .frame(maxWidth: width == nil ? .infinity : width, alignment: alignment)
             .frame(width: width, alignment: alignment)
     }
+
+    private var historyTableDivider: some View {
+        Rectangle()
+            .fill(DesignTokens.Colors.border)
+            .frame(height: 1)
+    }
 }
 
 private struct InsightsWorkspaceView: View {
     @Environment(AppContainer.self) private var container
 
     @State private var selectedRange: SummaryRange = .week
+    @State private var lowerCardHeight: CGFloat = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
@@ -515,23 +407,105 @@ private struct InsightsWorkspaceView: View {
                 DashboardSectionCard(title: "Session Volume", subtitle: "Per period") {
                     DashboardSessionCountChart(points: container.sessionEngine.chartPoints(for: selectedRange))
                 }
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .background(cardHeightReader)
+                .frame(height: lowerCardHeight == 0 ? nil : lowerCardHeight, alignment: .top)
 
                 DashboardSectionCard(title: "Split", subtitle: "Tracked vs break") {
                     DashboardCompositionChart(summary: container.sessionEngine.summary(for: selectedRange))
                 }
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .background(cardHeightReader)
+                .frame(height: lowerCardHeight == 0 ? nil : lowerCardHeight, alignment: .top)
             }
         }
+        .onPreferenceChange(InsightsCardHeightPreferenceKey.self) { height in
+            lowerCardHeight = height
+        }
+    }
+
+    private var cardHeightReader: some View {
+        GeometryReader { proxy in
+            Color.clear
+                .preference(key: InsightsCardHeightPreferenceKey.self, value: proxy.size.height)
+        }
+    }
+}
+
+private struct InsightsCardHeightPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
 
 private struct SettingsWorkspaceView: View {
     @Environment(AppContainer.self) private var container
+    @State private var holidayDraftDate = Calendar.current.startOfDay(for: .now)
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
             DashboardSectionCard(title: "Launch", subtitle: "Startup") {
                 Toggle("Launch at login", isOn: launchAtLoginBinding)
                     .toggleStyle(.switch)
+            }
+
+            DashboardSectionCard(title: "Work Schedule", subtitle: "Automatic weekday timer") {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+                    Toggle("Automatic work timer", isOn: automaticWorkTimerBinding)
+                        .toggleStyle(.switch)
+
+                    HStack(spacing: DesignTokens.Spacing.md) {
+                        settingsTimeField(title: "Start", selection: workdayStartBinding)
+
+                        settingsTimeField(title: "End", selection: workdayEndBinding)
+                    }
+                    .disabled(!container.settings.automaticWorkTimerEnabled)
+                }
+            }
+
+            DashboardSectionCard(title: "Holidays", subtitle: "Skip automatic starts on these dates") {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+                    HStack(spacing: DesignTokens.Spacing.md) {
+                        SettingsDateInputField(selection: $holidayDraftDate)
+
+                        Button("Add Holiday") {
+                            addHolidayDate()
+                        }
+                        .buttonStyle(GlassButtonStyle(prominence: .secondary(DesignTokens.Colors.textSecondary)))
+                        .frame(maxWidth: 140)
+                    }
+
+                    if holidayDates.isEmpty {
+                        Text("No holidays configured.")
+                            .font(.caption)
+                            .foregroundStyle(DesignTokens.Colors.textSecondary)
+                    } else {
+                        VStack(spacing: DesignTokens.Spacing.sm) {
+                            ForEach(holidayDates, id: \.self) { holiday in
+                                HStack(spacing: DesignTokens.Spacing.md) {
+                                    Text(holiday.formatted(date: .abbreviated, time: .omitted))
+                                        .foregroundStyle(DesignTokens.Colors.textPrimary)
+
+                                    Spacer()
+
+                                    Button("Remove") {
+                                        removeHolidayDate(holiday)
+                                    }
+                                    .buttonStyle(GlassButtonStyle(prominence: .secondary(DesignTokens.Colors.accentRed)))
+                                    .frame(maxWidth: 100)
+                                }
+
+                                if holiday != holidayDates.last {
+                                    Rectangle()
+                                        .fill(DesignTokens.Colors.border)
+                                        .frame(height: 1)
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             DashboardSectionCard(title: "Notch Behavior", subtitle: "Hover timings") {
@@ -623,6 +597,302 @@ private struct SettingsWorkspaceView: View {
             }
         )
     }
+
+    private var automaticWorkTimerBinding: Binding<Bool> {
+        Binding(
+            get: { container.settings.automaticWorkTimerEnabled },
+            set: { newValue in
+                var updated = container.settings
+                updated.automaticWorkTimerEnabled = newValue
+                container.saveSettings(updated)
+            }
+        )
+    }
+
+    private var workdayStartBinding: Binding<Date> {
+        Binding(
+            get: { timeOnlyDate(for: container.settings.workdayStartMinutes) },
+            set: { newValue in
+                var updated = container.settings
+                let proposedStart = minutesSinceMidnight(for: newValue)
+                updated.workdayStartMinutes = min(proposedStart, updated.workdayEndMinutes - 15)
+                container.saveSettings(updated)
+            }
+        )
+    }
+
+    private var workdayEndBinding: Binding<Date> {
+        Binding(
+            get: { timeOnlyDate(for: container.settings.workdayEndMinutes) },
+            set: { newValue in
+                var updated = container.settings
+                let proposedEnd = minutesSinceMidnight(for: newValue)
+                updated.workdayEndMinutes = max(proposedEnd, updated.workdayStartMinutes + 15)
+                container.saveSettings(updated)
+            }
+        )
+    }
+
+    private var holidayDates: [Date] {
+        container.settings.holidayDates
+            .map { Calendar.current.startOfDay(for: $0) }
+            .sorted()
+    }
+
+    private func addHolidayDate() {
+        let normalizedDate = Calendar.current.startOfDay(for: holidayDraftDate)
+        guard !holidayDates.contains(normalizedDate) else { return }
+
+        var updated = container.settings
+        updated.holidayDates.append(normalizedDate)
+        updated.holidayDates.sort()
+        container.saveSettings(updated)
+    }
+
+    private func removeHolidayDate(_ date: Date) {
+        let normalizedDate = Calendar.current.startOfDay(for: date)
+        var updated = container.settings
+        updated.holidayDates.removeAll {
+            Calendar.current.isDate(Calendar.current.startOfDay(for: $0), inSameDayAs: normalizedDate)
+        }
+        container.saveSettings(updated)
+    }
+
+    private func timeOnlyDate(for minutes: Int) -> Date {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: .now)
+        let hours = minutes / 60
+        let remainingMinutes = minutes % 60
+
+        return calendar.date(
+            bySettingHour: hours,
+            minute: remainingMinutes,
+            second: 0,
+            of: startOfDay
+        ) ?? startOfDay
+    }
+
+    private func minutesSinceMidnight(for date: Date) -> Int {
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        let hour = components.hour ?? 0
+        let minute = components.minute ?? 0
+
+        return (hour * 60) + minute
+    }
+
+    private func settingsTimeField(title: String, selection: Binding<Date>) -> some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(DesignTokens.Colors.textSecondary)
+
+            SettingsTimeInputField(selection: selection)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+}
+
+private struct SettingsTimeInputField: View {
+    let selection: Binding<Date>
+
+    @State private var hourText: String
+    @State private var minuteText: String
+    @FocusState private var focusedSegment: Segment?
+
+    private enum Segment {
+        case hour
+        case minute
+    }
+
+    init(selection: Binding<Date>) {
+        self.selection = selection
+
+        let components = Calendar.current.dateComponents([.hour, .minute], from: selection.wrappedValue)
+        _hourText = State(initialValue: Self.formattedSegment(components.hour ?? 0))
+        _minuteText = State(initialValue: Self.formattedSegment(components.minute ?? 0))
+    }
+
+    var body: some View {
+        HStack(spacing: DesignTokens.Spacing.xs) {
+            SettingsTimeSegmentField(text: $hourText, placeholder: "HH")
+                .focused($focusedSegment, equals: .hour)
+                .onSubmit {
+                    commitAndNormalize()
+                    focusedSegment = .minute
+                }
+
+            Text(":")
+                .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                .foregroundStyle(DesignTokens.Colors.textSecondary)
+
+            SettingsTimeSegmentField(text: $minuteText, placeholder: "MM")
+                .focused($focusedSegment, equals: .minute)
+                .onSubmit {
+                    commitAndNormalize()
+                }
+        }
+        .frame(maxWidth: .infinity, minHeight: 38, maxHeight: 38, alignment: .leading)
+        .onChange(of: hourText) { oldValue, newValue in
+            let sanitized = Self.sanitizedSegmentInput(
+                newValue,
+                previous: oldValue,
+                allowedRange: 0...23
+            )
+
+            guard sanitized != newValue else { return }
+            hourText = sanitized
+        }
+        .onChange(of: minuteText) { oldValue, newValue in
+            let sanitized = Self.sanitizedSegmentInput(
+                newValue,
+                previous: oldValue,
+                allowedRange: 0...59
+            )
+
+            guard sanitized != newValue else { return }
+            minuteText = sanitized
+        }
+        .onChange(of: focusedSegment) { _, newValue in
+            guard newValue == nil else { return }
+            commitAndNormalize()
+        }
+        .onChange(of: selection.wrappedValue) { _, newValue in
+            guard focusedSegment == nil else { return }
+            syncSegments(with: newValue)
+        }
+    }
+
+    private func commitAndNormalize() {
+        guard
+            let hour = Int(hourText),
+            let minute = Int(minuteText),
+            (0...23).contains(hour),
+            (0...59).contains(minute)
+        else {
+            syncSegments(with: selection.wrappedValue)
+            return
+        }
+
+        let normalizedDate = Self.date(hour: hour, minute: minute, basedOn: selection.wrappedValue)
+        selection.wrappedValue = normalizedDate
+        syncSegments(with: normalizedDate)
+    }
+
+    private func syncSegments(with date: Date) {
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        hourText = Self.formattedSegment(components.hour ?? 0)
+        minuteText = Self.formattedSegment(components.minute ?? 0)
+    }
+
+    private static func sanitizedSegmentInput(
+        _ value: String,
+        previous: String,
+        allowedRange: ClosedRange<Int>
+    ) -> String {
+        let digits = value.filter(\.isNumber)
+        let trimmedDigits = String(digits.prefix(2))
+
+        guard trimmedDigits.count == 2 else {
+            return trimmedDigits
+        }
+
+        guard let parsedValue = Int(trimmedDigits), allowedRange.contains(parsedValue) else {
+            return String(previous.filter(\.isNumber).prefix(2))
+        }
+
+        return trimmedDigits
+    }
+
+    private static func formattedSegment(_ value: Int) -> String {
+        String(format: "%02d", value)
+    }
+
+    private static func date(hour: Int, minute: Int, basedOn date: Date) -> Date {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+
+        return calendar.date(
+            bySettingHour: hour,
+            minute: minute,
+            second: 0,
+            of: startOfDay
+        ) ?? startOfDay
+    }
+}
+
+private struct SettingsDateInputField: View {
+    let selection: Binding<Date>
+
+    @State private var isPickerPresented = false
+
+    private var formattedDate: String {
+        selection.wrappedValue.formatted(date: .abbreviated, time: .omitted)
+    }
+
+    var body: some View {
+        Button {
+            isPickerPresented.toggle()
+        } label: {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                Text(formattedDate)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(DesignTokens.Colors.textPrimary)
+
+                Spacer(minLength: 0)
+
+                Image(systemName: "calendar")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Colors.textSecondary)
+            }
+            .padding(.horizontal, DesignTokens.Spacing.sm)
+            .frame(maxWidth: .infinity, minHeight: 38, maxHeight: 38, alignment: .leading)
+            .background {
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium, style: .continuous)
+                    .fill(DesignTokens.Colors.surfaceRaised)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignTokens.Radius.medium, style: .continuous)
+                            .stroke(DesignTokens.Colors.border, lineWidth: 1)
+                    )
+            }
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Holiday")
+        .popover(isPresented: $isPickerPresented) {
+            DatePicker("Holiday", selection: selection, displayedComponents: .date)
+                .datePickerStyle(.graphical)
+                .labelsHidden()
+                .padding(DesignTokens.Spacing.md)
+                .frame(minWidth: 260)
+        }
+    }
+}
+
+private struct SettingsTimeSegmentField: View {
+    @Binding var text: String
+
+    let placeholder: String
+
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .textFieldStyle(.plain)
+            .font(.system(size: 16, weight: .medium, design: .monospaced))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(DesignTokens.Colors.textPrimary)
+            .frame(width: 48)
+            .padding(.vertical, DesignTokens.Spacing.xs)
+            .background {
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.medium, style: .continuous)
+                    .fill(DesignTokens.Colors.surfaceRaised)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignTokens.Radius.medium, style: .continuous)
+                            .stroke(DesignTokens.Colors.border, lineWidth: 1)
+                    )
+            }
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.medium, style: .continuous))
+    }
 }
 
 private struct DashboardSectionCard<Content: View>: View {
@@ -644,6 +914,8 @@ private struct DashboardSectionCard<Content: View>: View {
 
             content
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxHeight: .infinity, alignment: .topLeading)
         .panelCardStyle()
     }
 }
@@ -737,19 +1009,30 @@ private struct DashboardSessionCountChart: View {
                 title: "No session volume",
                 message: "Start tracking to build a volume chart."
             )
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         } else {
-            Chart(points) { point in
-                BarMark(
-                    x: .value("Period", point.label),
-                    y: .value("Sessions", point.sessionCount)
+            GeometryReader { proxy in
+                Chart(points) { point in
+                    BarMark(
+                        x: .value("Period", point.label),
+                        y: .value("Sessions", point.sessionCount)
+                    )
+                    .foregroundStyle(DesignTokens.Colors.accentMint)
+                    .cornerRadius(4)
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading)
+                }
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: 220,
+                    idealHeight: max(proxy.size.height, 220),
+                    maxHeight: .infinity,
+                    alignment: .top
                 )
-                .foregroundStyle(DesignTokens.Colors.accentMint)
-                .cornerRadius(4)
             }
-            .chartYAxis {
-                AxisMarks(position: .leading)
-            }
-            .frame(height: 220)
+            .frame(minHeight: 220)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
     }
 }
@@ -831,7 +1114,7 @@ private struct HistoryRow: View {
             }
         }
         .padding(DesignTokens.Spacing.md)
-        .panelCardStyle(padding: DesignTokens.Spacing.md)
+        .background(DesignTokens.Colors.surface.opacity(0.18))
     }
 }
 

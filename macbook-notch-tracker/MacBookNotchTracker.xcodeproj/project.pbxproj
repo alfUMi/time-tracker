@@ -1,0 +1,421 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001012D00000100000001 /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000012D00000100000001 /* AppContainer.swift */; };
+		A10001022D00000100000001 /* MacBookNotchTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000022D00000100000001 /* MacBookNotchTrackerApp.swift */; };
+		A10001032D10000100000001 /* AppWindowID.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000182D00000100000001 /* AppWindowID.swift */; };
+		A10001032D00000100000001 /* AppCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000032D00000100000001 /* AppCommand.swift */; };
+		A10001042D00000100000001 /* AppCommandRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000042D00000100000001 /* AppCommandRouter.swift */; };
+		A10001052D00000100000001 /* SessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000052D00000100000001 /* SessionModels.swift */; };
+		A10001062D00000100000001 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000062D00000100000001 /* TimeFormatting.swift */; };
+		A10001072D00000100000001 /* InMemoryPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000072D00000100000001 /* InMemoryPersistence.swift */; };
+		A10001082D00000100000001 /* ServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000082D00000100000001 /* ServiceProtocols.swift */; };
+		A10001092D00000100000001 /* SessionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000092D00000100000001 /* SessionEngine.swift */; };
+		A100010A2D00000100000001 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000A2D00000100000001 /* DesignTokens.swift */; };
+		A100010B2D00000100000001 /* DashboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000B2D00000100000001 /* DashboardRootView.swift */; };
+		A100010C2D00000100000001 /* DashboardSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000C2D00000100000001 /* DashboardSection.swift */; };
+		A100010D2D00000100000001 /* MenuBarContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000D2D00000100000001 /* MenuBarContentView.swift */; };
+		A100010E2D00000100000001 /* IslandRendererView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000E2D00000100000001 /* IslandRendererView.swift */; };
+		A100010F2D00000100000001 /* IslandStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000F2D00000100000001 /* IslandStateMachine.swift */; };
+		A10001102D00000100000001 /* SettingsPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000102D00000100000001 /* SettingsPlaceholderView.swift */; };
+		A10001112D00000100000001 /* IslandGeometryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000112D00000100000001 /* IslandGeometryEngine.swift */; };
+		A10001122D00000100000001 /* IslandSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000122D00000100000001 /* IslandSceneController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10000012D00000100000001 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
+		A10000022D00000100000001 /* MacBookNotchTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacBookNotchTrackerApp.swift; sourceTree = "<group>"; };
+		A10000182D00000100000001 /* AppWindowID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWindowID.swift; sourceTree = "<group>"; };
+		A10000032D00000100000001 /* AppCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCommand.swift; sourceTree = "<group>"; };
+		A10000042D00000100000001 /* AppCommandRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCommandRouter.swift; sourceTree = "<group>"; };
+		A10000052D00000100000001 /* SessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionModels.swift; sourceTree = "<group>"; };
+		A10000062D00000100000001 /* TimeFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatting.swift; sourceTree = "<group>"; };
+		A10000072D00000100000001 /* InMemoryPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryPersistence.swift; sourceTree = "<group>"; };
+		A10000082D00000100000001 /* ServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProtocols.swift; sourceTree = "<group>"; };
+		A10000092D00000100000001 /* SessionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionEngine.swift; sourceTree = "<group>"; };
+		A100000A2D00000100000001 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
+		A100000B2D00000100000001 /* DashboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardRootView.swift; sourceTree = "<group>"; };
+		A100000C2D00000100000001 /* DashboardSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardSection.swift; sourceTree = "<group>"; };
+		A100000D2D00000100000001 /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
+		A100000E2D00000100000001 /* IslandRendererView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandRendererView.swift; sourceTree = "<group>"; };
+		A100000F2D00000100000001 /* IslandStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandStateMachine.swift; sourceTree = "<group>"; };
+		A10000102D00000100000001 /* SettingsPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPlaceholderView.swift; sourceTree = "<group>"; };
+		A10000112D00000100000001 /* IslandGeometryEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandGeometryEngine.swift; sourceTree = "<group>"; };
+		A10000122D00000100000001 /* IslandSceneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandSceneController.swift; sourceTree = "<group>"; };
+		A10000132D00000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		A10000142D00000100000001 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = SOURCE_ROOT; };
+		A10000152D00000100000001 /* application-architecture-report.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = application-architecture-report.md; sourceTree = "<group>"; };
+		A10000162D00000100000001 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		A10000172D00000100000001 /* MacBookNotchTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = MacBookNotchTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000202D00000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000212D00000100000001 = {
+			isa = PBXGroup;
+			children = (
+				A10000142D00000100000001 /* Package.swift */,
+				A10000132D00000100000001 /* Info.plist */,
+				A10000162D00000100000001 /* README.md */,
+				A10000222D00000100000001 /* Sources */,
+				A10000332D00000100000001 /* plans */,
+				A10000342D00000100000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10000222D00000100000001 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A10000232D00000100000001 /* MacBookNotchTracker */,
+			);
+			path = Sources;
+			sourceTree = SOURCE_ROOT;
+		};
+		A10000232D00000100000001 /* MacBookNotchTracker */ = {
+			isa = PBXGroup;
+			children = (
+				A10000242D00000100000001 /* App */,
+				A10000252D00000100000001 /* Core */,
+				A10000292D00000100000001 /* DesignSystem */,
+				A100002A2D00000100000001 /* Features */,
+				A100002F2D00000100000001 /* Platform */,
+			);
+			path = MacBookNotchTracker;
+			sourceTree = "<group>";
+		};
+		A10000242D00000100000001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A10000012D00000100000001 /* AppContainer.swift */,
+				A10000182D00000100000001 /* AppWindowID.swift */,
+				A10000022D00000100000001 /* MacBookNotchTrackerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A10000252D00000100000001 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A10000262D00000100000001 /* Commands */,
+				A10000272D00000100000001 /* Models */,
+				A10000282D00000100000001 /* Services */,
+				A10000372D00000100000001 /* Session */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		A10000262D00000100000001 /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				A10000032D00000100000001 /* AppCommand.swift */,
+				A10000042D00000100000001 /* AppCommandRouter.swift */,
+			);
+			path = Commands;
+			sourceTree = "<group>";
+		};
+		A10000272D00000100000001 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A10000052D00000100000001 /* SessionModels.swift */,
+				A10000062D00000100000001 /* TimeFormatting.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A10000282D00000100000001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A10000072D00000100000001 /* InMemoryPersistence.swift */,
+				A10000082D00000100000001 /* ServiceProtocols.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A10000292D00000100000001 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				A100000A2D00000100000001 /* DesignTokens.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		A100002A2D00000100000001 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				A100002B2D00000100000001 /* Dashboard */,
+				A100002C2D00000100000001 /* MenuBar */,
+				A100002D2D00000100000001 /* Notch */,
+				A100002E2D00000100000001 /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		A100002B2D00000100000001 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				A100000B2D00000100000001 /* DashboardRootView.swift */,
+				A100000C2D00000100000001 /* DashboardSection.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		A100002C2D00000100000001 /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				A100000D2D00000100000001 /* MenuBarContentView.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		A100002D2D00000100000001 /* Notch */ = {
+			isa = PBXGroup;
+			children = (
+				A100000E2D00000100000001 /* IslandRendererView.swift */,
+				A100000F2D00000100000001 /* IslandStateMachine.swift */,
+			);
+			path = Notch;
+			sourceTree = "<group>";
+		};
+		A100002E2D00000100000001 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A10000102D00000100000001 /* SettingsPlaceholderView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		A100002F2D00000100000001 /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				A10000302D00000100000001 /* Windowing */,
+			);
+			path = Platform;
+			sourceTree = "<group>";
+		};
+		A10000302D00000100000001 /* Windowing */ = {
+			isa = PBXGroup;
+			children = (
+				A10000112D00000100000001 /* IslandGeometryEngine.swift */,
+				A10000122D00000100000001 /* IslandSceneController.swift */,
+			);
+			path = Windowing;
+			sourceTree = "<group>";
+		};
+		A10000332D00000100000001 /* plans */ = {
+			isa = PBXGroup;
+			children = (
+				A10000152D00000100000001 /* application-architecture-report.md */,
+			);
+			path = plans;
+			sourceTree = SOURCE_ROOT;
+		};
+		A10000342D00000100000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10000172D00000100000001 /* MacBookNotchTracker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A10000372D00000100000001 /* Session */ = {
+			isa = PBXGroup;
+			children = (
+				A10000092D00000100000001 /* SessionEngine.swift */,
+			);
+			path = Session;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A100001A2D00000100000001 /* MacBookNotchTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000422D00000100000001 /* Build configuration list for PBXNativeTarget "MacBookNotchTracker" */;
+			buildPhases = (
+				A10000212D10000100000001 /* Sources */,
+				A10000202D00000100000001 /* Frameworks */,
+				A10000232D10000100000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacBookNotchTracker;
+			productName = MacBookNotchTracker;
+			productReference = A10000172D00000100000001 /* MacBookNotchTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000402D00000100000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					A100001A2D00000100000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = A10000412D00000100000001 /* Build configuration list for PBXProject "MacBookNotchTracker" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A10000212D00000100000001;
+			productRefGroup = A10000342D00000100000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A100001A2D00000100000001 /* MacBookNotchTracker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000232D10000100000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000212D10000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001012D00000100000001 /* AppContainer.swift in Sources */,
+				A10001022D00000100000001 /* MacBookNotchTrackerApp.swift in Sources */,
+				A10001032D10000100000001 /* AppWindowID.swift in Sources */,
+				A10001032D00000100000001 /* AppCommand.swift in Sources */,
+				A10001042D00000100000001 /* AppCommandRouter.swift in Sources */,
+				A10001052D00000100000001 /* SessionModels.swift in Sources */,
+				A10001062D00000100000001 /* TimeFormatting.swift in Sources */,
+				A10001072D00000100000001 /* InMemoryPersistence.swift in Sources */,
+				A10001082D00000100000001 /* ServiceProtocols.swift in Sources */,
+				A10001092D00000100000001 /* SessionEngine.swift in Sources */,
+				A100010A2D00000100000001 /* DesignTokens.swift in Sources */,
+				A100010B2D00000100000001 /* DashboardRootView.swift in Sources */,
+				A100010C2D00000100000001 /* DashboardSection.swift in Sources */,
+				A100010D2D00000100000001 /* MenuBarContentView.swift in Sources */,
+				A100010E2D00000100000001 /* IslandRendererView.swift in Sources */,
+				A100010F2D00000100000001 /* IslandStateMachine.swift in Sources */,
+				A10001102D00000100000001 /* SettingsPlaceholderView.swift in Sources */,
+				A10001112D00000100000001 /* IslandGeometryEngine.swift in Sources */,
+				A10001122D00000100000001 /* IslandSceneController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A10000512D00000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A10000522D00000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A10000532D00000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.envis.MacBookNotchTracker;
+				PRODUCT_NAME = MacBookNotchTracker;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A10000542D00000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.envis.MacBookNotchTracker;
+				PRODUCT_NAME = MacBookNotchTracker;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10000412D00000100000001 /* Build configuration list for PBXProject "MacBookNotchTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000512D00000100000001 /* Debug */,
+				A10000522D00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000422D00000100000001 /* Build configuration list for PBXNativeTarget "MacBookNotchTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000532D00000100000001 /* Debug */,
+				A10000542D00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A10000402D00000100000001 /* Project object */;
+}

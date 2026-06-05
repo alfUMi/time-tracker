@@ -49,10 +49,10 @@ final class SessionEngine {
         case .extendSession:
             updateActiveState(.extended)
         case .startBreak:
-            updateActiveState(.onBreak)
+            startBreak()
             notificationService.clearBreakReminder()
         case .endBreak:
-            updateActiveState(.running)
+            endBreak()
             notificationService.scheduleBreakReminder(after: breakReminderMinutes)
         case .openDashboard, .toggleNotchPreview, .selectDashboardSection:
             break
@@ -157,21 +157,47 @@ final class SessionEngine {
     private func stopSession() {
         guard let activeSession else { return }
 
-        let record = SessionRecord(
-            id: activeSession.id,
-            startedAt: activeSession.startedAt,
-            endedAt: .now,
-            taskLabel: activeSession.taskLabel,
-            state: activeSession.state,
-            createdAt: activeSession.startedAt,
-            updatedAt: .now,
-            notes: nil
-        )
-
-        sessionHistory.insert(record, at: 0)
+        appendRecord(from: activeSession, endedAt: .now)
         self.activeSession = nil
         persistSnapshot()
         notificationService.clearBreakReminder()
+    }
+
+    private func startBreak() {
+        guard
+            let activeSession,
+            activeSession.state == .running || activeSession.state == .extended
+        else {
+            return
+        }
+
+        let transitionDate = Date.now
+        appendRecord(from: activeSession, endedAt: transitionDate)
+
+        self.activeSession = ActiveSession(
+            id: UUID(),
+            startedAt: transitionDate,
+            taskLabel: activeSession.taskLabel,
+            state: .onBreak
+        )
+
+        persistSnapshot()
+    }
+
+    private func endBreak() {
+        guard let activeSession, activeSession.state == .onBreak else { return }
+
+        let transitionDate = Date.now
+        appendRecord(from: activeSession, endedAt: transitionDate)
+
+        self.activeSession = ActiveSession(
+            id: UUID(),
+            startedAt: transitionDate,
+            taskLabel: activeSession.taskLabel,
+            state: .running
+        )
+
+        persistSnapshot()
     }
 
     private func updateActiveState(_ state: SessionState) {
@@ -185,6 +211,21 @@ final class SessionEngine {
         } else if state == .onBreak {
             notificationService.clearBreakReminder()
         }
+    }
+
+    private func appendRecord(from session: ActiveSession, endedAt: Date) {
+        let record = SessionRecord(
+            id: session.id,
+            startedAt: session.startedAt,
+            endedAt: max(endedAt, session.startedAt),
+            taskLabel: session.taskLabel,
+            state: session.state,
+            createdAt: session.startedAt,
+            updatedAt: endedAt,
+            notes: nil
+        )
+
+        sessionHistory.insert(record, at: 0)
     }
 
     private func canTransition(to newState: SessionState) -> Bool {
