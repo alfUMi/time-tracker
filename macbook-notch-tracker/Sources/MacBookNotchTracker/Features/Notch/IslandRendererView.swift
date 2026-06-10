@@ -88,18 +88,29 @@ struct IslandRendererView: View {
                     .fill(stateTint)
                     .frame(width: 8, height: 8)
 
-                IslandWorkBreakStatusText(
-                    state: container.sessionEngine.currentState,
-                    activeSession: container.sessionEngine.activeSession
-                )
-                .font(.system(size: 11, weight: .semibold))
-                .monospacedDigit()
-                .foregroundStyle(DesignTokens.Colors.textPrimary)
-                .lineLimit(1)
+                Text(statusLabel)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Colors.textPrimary)
+                    .lineLimit(1)
+
+                Spacer(minLength: 8)
+
+                IslandLiveDurationText(activeSession: container.sessionEngine.activeSession)
+                    .font(.system(size: 13, weight: .semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(DesignTokens.Colors.textPrimary)
             }
 
             compactActionRow
         }
+    }
+
+    private var statusLabel: String {
+        guard container.sessionEngine.activeSession != nil else {
+            return "Idle"
+        }
+
+        return container.sessionEngine.currentState == .onBreak ? "Break" : "Work"
     }
 
     private var compactActionRow: some View {
@@ -203,23 +214,21 @@ struct IslandRendererView: View {
     }
 }
 
-private struct IslandWorkBreakStatusText: View {
-    let state: SessionState
+private struct IslandLiveDurationText: View {
     let activeSession: ActiveSession?
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1)) { timeline in
-            Text(statusString(for: timeline.date))
+            Text(durationString(for: timeline.date))
         }
     }
 
-    private func statusString(for date: Date) -> String {
-        guard let activeSession else { return "Idle" }
+    private func durationString(for date: Date) -> String {
+        guard let activeSession else {
+            return "00:00:00"
+        }
 
-        let label = state == .onBreak ? "Break" : "Work"
-        let duration = max(0, date.timeIntervalSince(activeSession.startedAt)).formattedDuration
-
-        return "\(label) \(duration)"
+        return max(0, date.timeIntervalSince(activeSession.startedAt)).formattedDuration
     }
 }
 
