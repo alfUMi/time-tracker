@@ -8,22 +8,28 @@ final class SessionEngine {
 
     private(set) var activeSession: ActiveSession?
     private(set) var sessionHistory: [SessionRecord]
+    private var breakRemindersEnabled: Bool
     private var breakReminderMinutes: Int
 
     init(
         sessionStore: SessionStoring,
         notificationService: NotificationServicing,
+        breakRemindersEnabled: Bool,
         breakReminderMinutes: Int = 60
     ) {
         self.sessionStore = sessionStore
         self.notificationService = notificationService
+        self.breakRemindersEnabled = breakRemindersEnabled
         self.breakReminderMinutes = breakReminderMinutes
 
         let snapshot = sessionStore.loadSnapshot()
         self.activeSession = snapshot.activeSession
         self.sessionHistory = snapshot.sessionHistory
 
-        if activeSession?.state == .running || activeSession?.state == .extended {
+        if
+            breakRemindersEnabled,
+            activeSession?.state == .running || activeSession?.state == .extended
+        {
             notificationService.scheduleBreakReminder(after: breakReminderMinutes)
         }
     }
@@ -53,14 +59,30 @@ final class SessionEngine {
             notificationService.clearBreakReminder()
         case .endBreak:
             endBreak()
-            notificationService.scheduleBreakReminder(after: breakReminderMinutes)
+            if breakRemindersEnabled {
+                notificationService.scheduleBreakReminder(after: breakReminderMinutes)
+            }
         case .openDashboard, .toggleNotchPreview, .selectDashboardSection:
             break
         }
     }
 
     func updateSettings(_ settings: AppSettings) {
+        let wasEnabled = breakRemindersEnabled
+        breakRemindersEnabled = settings.breakRemindersEnabled
         breakReminderMinutes = settings.breakReminderMinutes
+
+        guard breakRemindersEnabled else {
+            notificationService.clearBreakReminder()
+            return
+        }
+
+        if
+            (activeSession?.state == .running || activeSession?.state == .extended),
+            wasEnabled || breakRemindersEnabled
+        {
+            notificationService.scheduleBreakReminder(after: breakReminderMinutes)
+        }
     }
 
     func summary(for range: SummaryRange, now: Date = .now) -> SessionSummary {
@@ -147,7 +169,10 @@ final class SessionEngine {
         )
 
         persistSnapshot()
-        notificationService.scheduleBreakReminder(after: breakReminderMinutes)
+
+        if breakRemindersEnabled {
+            notificationService.scheduleBreakReminder(after: breakReminderMinutes)
+        }
     }
 
     private func stopSession() {
@@ -200,9 +225,12 @@ final class SessionEngine {
 
         persistSnapshot()
 
-        if state == .running || state == .extended {
+        if
+            breakRemindersEnabled,
+            state == .running || state == .extended
+        {
             notificationService.scheduleBreakReminder(after: breakReminderMinutes)
-        } else if state == .onBreak {
+        } else if state == .onBreak || state == .paused {
             notificationService.clearBreakReminder()
         }
     }

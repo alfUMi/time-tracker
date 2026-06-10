@@ -27,7 +27,7 @@ final class AppContainer {
     init(
         settingsStore: SettingsStoring = JSONSettingsStore(),
         sessionStore: SessionStoring = JSONSessionStore(),
-        notificationService: NotificationServicing = NotificationServiceStub(),
+        notificationService: NotificationServicing = NotificationService(),
         launchAtLoginController: LaunchAtLoginControlling = LaunchAtLoginControllerStub(),
         islandSceneController: IslandSceneControlling? = nil,
         sectionRegistry: DashboardSectionRegistry = .default
@@ -44,6 +44,7 @@ final class AppContainer {
         self.sessionEngine = SessionEngine(
             sessionStore: sessionStore,
             notificationService: notificationService,
+            breakRemindersEnabled: loadedSettings.breakRemindersEnabled,
             breakReminderMinutes: loadedSettings.breakReminderMinutes
         )
 
