@@ -38,8 +38,8 @@ final class SessionEngine {
 
     func handle(_ command: AppCommand) {
         switch command {
-        case .startSession(let taskLabel):
-            startSession(taskLabel: taskLabel ?? "Deep Work")
+        case .startSession:
+            startSession()
         case .stopSession:
             stopSession()
         case .pauseSession:
@@ -80,10 +80,7 @@ final class SessionEngine {
     func filteredHistory(_ filter: SessionHistoryFilter, now: Date = .now) -> [SessionRecord] {
         records(in: filter.range, now: now).filter { record in
             let matchesState = filter.state.map { record.state == $0 } ?? true
-            let searchText = filter.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-            let matchesSearch = searchText.isEmpty || record.taskLabel.localizedCaseInsensitiveContains(searchText)
-
-            return matchesState && matchesSearch
+            return matchesState
         }
     }
 
@@ -140,13 +137,12 @@ final class SessionEngine {
         persistSnapshot()
     }
 
-    private func startSession(taskLabel: String) {
+    private func startSession() {
         guard activeSession == nil else { return }
 
         activeSession = ActiveSession(
             id: UUID(),
             startedAt: .now,
-            taskLabel: taskLabel,
             state: .running
         )
 
@@ -177,7 +173,6 @@ final class SessionEngine {
         self.activeSession = ActiveSession(
             id: UUID(),
             startedAt: transitionDate,
-            taskLabel: activeSession.taskLabel,
             state: .onBreak
         )
 
@@ -193,7 +188,6 @@ final class SessionEngine {
         self.activeSession = ActiveSession(
             id: UUID(),
             startedAt: transitionDate,
-            taskLabel: activeSession.taskLabel,
             state: .running
         )
 
@@ -218,7 +212,6 @@ final class SessionEngine {
             id: session.id,
             startedAt: session.startedAt,
             endedAt: max(endedAt, session.startedAt),
-            taskLabel: session.taskLabel,
             state: session.state,
             createdAt: session.startedAt,
             updatedAt: endedAt,
@@ -286,7 +279,6 @@ final class SessionEngine {
                     id: activeSession.id,
                     startedAt: activeSession.startedAt,
                     endedAt: now,
-                    taskLabel: activeSession.taskLabel,
                     state: activeSession.state,
                     createdAt: activeSession.startedAt,
                     updatedAt: now,

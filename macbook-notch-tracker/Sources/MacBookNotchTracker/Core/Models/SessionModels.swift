@@ -43,7 +43,6 @@ enum SessionState: String, CaseIterable, Identifiable, Codable {
 struct ActiveSession: Identifiable, Equatable, Codable {
     let id: UUID
     var startedAt: Date
-    var taskLabel: String
     var state: SessionState
 }
 
@@ -51,7 +50,6 @@ struct SessionRecord: Identifiable, Equatable, Codable {
     let id: UUID
     var startedAt: Date
     var endedAt: Date
-    var taskLabel: String
     var state: SessionState
     var createdAt: Date
     var updatedAt: Date
@@ -166,9 +164,8 @@ enum SummaryRange: String, CaseIterable, Identifiable, Codable {
 struct SessionHistoryFilter: Equatable, Codable {
     var range: SummaryRange
     var state: SessionState?
-    var searchText: String
 
-    static let `default` = SessionHistoryFilter(range: .week, state: nil, searchText: "")
+    static let `default` = SessionHistoryFilter(range: .week, state: nil)
 }
 
 struct SessionChartPoint: Identifiable, Equatable, Codable {

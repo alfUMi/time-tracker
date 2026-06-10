@@ -68,6 +68,12 @@ final class AppContainer {
         islandStateMachine.updateSettings(settings)
         launchAtLoginController.setEnabled(settings.launchAtLoginEnabled)
 
+        let scheduleSettingsChanged =
+            settings.automaticWorkTimerEnabled != previousSettings.automaticWorkTimerEnabled ||
+            settings.workdayStartMinutes != previousSettings.workdayStartMinutes ||
+            settings.workdayEndMinutes != previousSettings.workdayEndMinutes ||
+            settings.holidayDates != previousSettings.holidayDates
+
         if settings.automaticWorkTimerEnabled && !previousSettings.automaticWorkTimerEnabled {
             lastAutomaticScheduleCheckAt = .now
         } else if !settings.automaticWorkTimerEnabled {
@@ -75,6 +81,10 @@ final class AppContainer {
         }
 
         synchronizeAutomaticWorkSchedule()
+
+        if scheduleSettingsChanged {
+            startWorkScheduleMonitoring()
+        }
     }
 
     var isNotchPreviewVisible: Bool {
@@ -126,15 +136,24 @@ final class AppContainer {
 
     private func startWorkScheduleMonitoring() {
         workScheduleTimer?.invalidate()
+        workScheduleTimer = nil
 
-        let timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+        guard let nextCheckDate = nextAutomaticScheduleCheckDate(from: .now) else { return }
+
+        let timer = Timer(fire: nextCheckDate, interval: 0, repeats: false) { [weak self] _ in
             Task { @MainActor [weak self] in
-                self?.synchronizeAutomaticWorkSchedule()
+                self?.handleWorkScheduleTimerFired()
             }
         }
 
-        timer.tolerance = 5
+        timer.tolerance = 0.15
+        RunLoop.main.add(timer, forMode: .common)
         workScheduleTimer = timer
+    }
+
+    private func handleWorkScheduleTimerFired() {
+        synchronizeAutomaticWorkSchedule()
+        startWorkScheduleMonitoring()
     }
 
     private func synchronizeAutomaticWorkSchedule(now: Date = .now) {
@@ -169,8 +188,40 @@ final class AppContainer {
         guard sessionEngine.currentState == .idle else { return }
         guard lastAutomaticStartDayIdentifier != dayIdentifier else { return }
 
-        sessionEngine.handle(.startSession(taskLabel: "Scheduled Work"))
+        sessionEngine.handle(.startSession)
         lastAutomaticStartDayIdentifier = dayIdentifier
+    }
+
+    private func nextAutomaticScheduleCheckDate(from now: Date) -> Date? {
+        guard settings.automaticWorkTimerEnabled else { return nil }
+        guard settings.workdayEndMinutes > settings.workdayStartMinutes else { return nil }
+
+        if isAutomaticWorkday(now) {
+            let startDate = scheduledDate(for: settings.workdayStartMinutes, on: now)
+            let endDate = scheduledDate(for: settings.workdayEndMinutes, on: now)
+
+            if now < startDate {
+                return startDate
+            }
+
+            if now < endDate {
+                return endDate
+            }
+        }
+
+        let calendar = Calendar.current
+        var candidate = calendar.startOfDay(for: now)
+
+        for _ in 0..<14 {
+            guard let nextDay = calendar.date(byAdding: .day, value: 1, to: candidate) else { break }
+            candidate = nextDay
+
+            if isAutomaticWorkday(candidate) {
+                return scheduledDate(for: settings.workdayStartMinutes, on: candidate)
+            }
+        }
+
+        return nil
     }
 
     private func isAutomaticWorkday(_ date: Date) -> Bool {

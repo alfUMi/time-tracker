@@ -1,7 +1,7 @@
 import Foundation
 
 enum AppCommand {
-    case startSession(taskLabel: String?)
+    case startSession
     case stopSession
     case pauseSession
     case resumeSession

@@ -80,7 +80,7 @@ private struct DashboardSidebar: View {
 
                 DashboardStateChip(state: container.sessionEngine.currentState)
 
-                Text(container.sessionEngine.activeSession?.taskLabel ?? "No active task")
+                Text(activeSessionSummary)
                     .font(.system(size: 13))
                     .foregroundStyle(DesignTokens.Colors.textSecondary)
                     .lineLimit(2)
@@ -91,6 +91,18 @@ private struct DashboardSidebar: View {
             .padding(.bottom, DesignTokens.Spacing.md)
             .background(GlassBackgroundView())
         }
+    }
+
+    private var activeSessionSummary: String {
+        if container.sessionEngine.activeSession == nil {
+            return "No active session"
+        }
+
+        if container.sessionEngine.currentState == .onBreak {
+            return "Break in progress"
+        }
+
+        return "Work in progress"
     }
 }
 
@@ -184,7 +196,7 @@ private struct CurrentSessionPanel: View {
                             .glassChipStyle(tint: DesignTokens.Colors.textSecondary)
                     }
 
-                    Text(container.sessionEngine.activeSession?.taskLabel ?? "Ready to start a focused session.")
+                    Text(sessionHeadline)
                         .font(.system(size: 20, weight: .medium))
                         .foregroundStyle(DesignTokens.Colors.textPrimary)
                 }
@@ -222,6 +234,18 @@ private struct CurrentSessionPanel: View {
     private var todaySummary: SessionSummary {
         container.sessionEngine.summary(for: .day)
     }
+
+    private var sessionHeadline: String {
+        if container.sessionEngine.activeSession == nil {
+            return "Ready to start."
+        }
+
+        if container.sessionEngine.currentState == .onBreak {
+            return "Break in progress"
+        }
+
+        return "Work in progress"
+    }
 }
 
 private struct OverviewWorkspaceView: View {
@@ -241,7 +265,6 @@ private struct HistoryWorkspaceView: View {
 
     @State private var selectedRange: SummaryRange = .week
     @State private var stateFilter: HistoryStateFilter = .all
-    @State private var searchText = ""
     @State private var editingRecord: SessionRecord?
     @State private var pendingDeletion: SessionRecord?
     @State private var recentlyDeleted: SessionRecord?
@@ -249,7 +272,7 @@ private struct HistoryWorkspaceView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
             if let recentlyDeleted {
-                DashboardUndoBanner(taskLabel: recentlyDeleted.taskLabel) {
+                DashboardUndoBanner {
                     container.sessionEngine.restoreRecord(recentlyDeleted)
                     self.recentlyDeleted = nil
                 } dismissAction: {
@@ -274,9 +297,6 @@ private struct HistoryWorkspaceView: View {
                         }
                         .frame(maxWidth: 200)
                     }
-
-                    TextField("Search task or notes", text: $searchText)
-                        .textFieldStyle(.roundedBorder)
                 }
             }
 
@@ -284,7 +304,7 @@ private struct HistoryWorkspaceView: View {
                 if filteredRecords.isEmpty {
                     EmptyDashboardState(
                         title: "No matching sessions",
-                        message: "Adjust the range, state, or search term to widen the history results."
+                        message: "Adjust the range or state filter to widen the history results."
                     )
                 } else {
                     VStack(spacing: 0) {
@@ -329,7 +349,7 @@ private struct HistoryWorkspaceView: View {
                 pendingDeletion = nil
             }
         } message: { record in
-            Text("Remove the session for \(record.taskLabel)? You can undo the deletion from the history panel.")
+            Text("Remove this record? You can undo the deletion from the history panel.")
         }
     }
 
@@ -337,8 +357,7 @@ private struct HistoryWorkspaceView: View {
         container.sessionEngine.filteredHistory(
             SessionHistoryFilter(
                 range: selectedRange,
-                state: stateFilter.sessionState,
-                searchText: searchText
+                state: stateFilter.sessionState
             )
         )
     }
@@ -358,7 +377,7 @@ private struct HistoryWorkspaceView: View {
         HStack(spacing: DesignTokens.Spacing.md) {
             headerCell("Date", width: 130, alignment: .leading)
             headerCell("State", width: 110, alignment: .leading)
-            headerCell("Task", width: nil, alignment: .leading)
+            headerCell("Notes", width: nil, alignment: .leading)
             headerCell("Duration", width: 120, alignment: .trailing)
             headerCell("Actions", width: 150, alignment: .trailing)
         }
@@ -1070,6 +1089,8 @@ private struct HistoryRow: View {
     let onDelete: () -> Void
 
     var body: some View {
+        let notesText = (record.notes ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
         HStack(spacing: DesignTokens.Spacing.md) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(record.startedAt.formatted(date: .abbreviated, time: .shortened))
@@ -1085,15 +1106,9 @@ private struct HistoryRow: View {
                 .frame(width: 110, alignment: .leading)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(record.taskLabel)
+                Text(notesText.isEmpty ? "No notes" : notesText)
                     .foregroundStyle(DesignTokens.Colors.textPrimary)
-
-                if let notes = record.notes, !notes.isEmpty {
-                    Text(notes)
-                        .font(.caption)
-                        .foregroundStyle(DesignTokens.Colors.textSecondary)
-                        .lineLimit(1)
-                }
+                    .lineLimit(2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -1121,7 +1136,6 @@ private struct HistoryRow: View {
 private struct SessionEditSheet: View {
     @Environment(\.dismiss) private var dismiss
 
-    @State private var taskLabel: String
     @State private var startedAt: Date
     @State private var endedAt: Date
     @State private var state: SessionState
@@ -1133,7 +1147,6 @@ private struct SessionEditSheet: View {
     init(record: SessionRecord, onSave: @escaping (SessionRecord) -> Void) {
         self.record = record
         self.onSave = onSave
-        _taskLabel = State(initialValue: record.taskLabel)
         _startedAt = State(initialValue: record.startedAt)
         _endedAt = State(initialValue: record.endedAt)
         _state = State(initialValue: record.state)
@@ -1142,13 +1155,11 @@ private struct SessionEditSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
-            Text("Edit Session")
+            Text("Edit Record")
                 .font(.system(size: 24, weight: .semibold))
                 .foregroundStyle(DesignTokens.Colors.textPrimary)
 
             Form {
-                TextField("Task", text: $taskLabel)
-
                 Picker("State", selection: $state) {
                     ForEach(SessionState.allCases.filter { $0 != .idle }) { state in
                         Text(state.title).tag(state)
@@ -1185,7 +1196,6 @@ private struct SessionEditSheet: View {
                             id: record.id,
                             startedAt: startedAt,
                             endedAt: endedAt,
-                            taskLabel: taskLabel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled Session" : taskLabel,
                             state: state,
                             createdAt: record.createdAt,
                             updatedAt: .now,
@@ -1204,7 +1214,6 @@ private struct SessionEditSheet: View {
 }
 
 private struct DashboardUndoBanner: View {
-    let taskLabel: String
     let undoAction: () -> Void
     let dismissAction: () -> Void
 
@@ -1216,10 +1225,6 @@ private struct DashboardUndoBanner: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Session deleted")
                     .foregroundStyle(DesignTokens.Colors.textPrimary)
-
-                Text(taskLabel)
-                    .font(.caption)
-                    .foregroundStyle(DesignTokens.Colors.textSecondary)
             }
 
             Spacer()
