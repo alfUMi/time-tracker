@@ -461,6 +461,7 @@ private struct InsightsCardHeightPreferenceKey: PreferenceKey {
 
 private struct SettingsWorkspaceView: View {
     @Environment(AppContainer.self) private var container
+
     @State private var holidayDraftDate = Calendar.current.startOfDay(for: .now)
 
     var body: some View {
@@ -480,7 +481,13 @@ private struct SettingsWorkspaceView: View {
 
                         settingsTimeField(title: "End", selection: workdayEndBinding)
                     }
-                    .disabled(!container.settings.automaticWorkTimerEnabled)
+                    .disabled(!container.settingsDraft.automaticWorkTimerEnabled)
+
+                    if container.settingsDraft.automaticWorkTimerEnabled, !isWorkScheduleValid {
+                        Text("End time must be later than start time for the automatic timer to work.")
+                            .font(.caption)
+                            .foregroundStyle(DesignTokens.Colors.accentRed)
+                    }
                 }
             }
 
@@ -530,15 +537,15 @@ private struct SettingsWorkspaceView: View {
             DashboardSectionCard(title: "Notch Behavior", subtitle: "Hover timings") {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
                     Stepper(
-                        "Reveal delay: \(container.settings.notchRevealDelayMilliseconds) ms",
-                        value: revealDelayBinding,
+                        "Reveal delay: \(container.settingsDraft.notchRevealDelayMilliseconds) ms",
+                        value: notchRevealDelayBinding,
                         in: 80...300,
                         step: 10
                     )
 
                     Stepper(
-                        "Close delay: \(container.settings.notchCloseDelayMilliseconds) ms",
-                        value: closeDelayBinding,
+                        "Close delay: \(container.settingsDraft.notchCloseDelayMilliseconds) ms",
+                        value: notchCloseDelayBinding,
                         in: 120...400,
                         step: 10
                     )
@@ -547,113 +554,121 @@ private struct SettingsWorkspaceView: View {
 
             DashboardSectionCard(title: "Reminders", subtitle: "Break alerts") {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-                    Toggle("Break reminders", isOn: remindersEnabledBinding)
+                    Toggle("Break reminders", isOn: breakRemindersEnabledBinding)
                         .toggleStyle(.switch)
 
                     Stepper(
-                        "Reminder interval: \(container.settings.breakReminderMinutes) min",
-                        value: reminderMinutesBinding,
+                        "Reminder interval: \(container.settingsDraft.breakReminderMinutes) min",
+                        value: breakReminderMinutesBinding,
                         in: 15...180,
                         step: 15
                     )
-                    .disabled(!container.settings.breakRemindersEnabled)
+                    .disabled(!container.settingsDraft.breakRemindersEnabled)
                 }
+            }
+
+            HStack(spacing: DesignTokens.Spacing.md) {
+                Text(hasUnsavedChanges ? "Unsaved changes" : "All changes saved")
+                    .font(.caption)
+                    .foregroundStyle(DesignTokens.Colors.textSecondary)
+
+                Spacer()
+
+                if hasUnsavedChanges {
+                    Button("Revert") {
+                        container.discardSettingsDraft()
+                        holidayDraftDate = Calendar.current.startOfDay(for: .now)
+                    }
+                    .buttonStyle(GlassButtonStyle(prominence: .secondary(DesignTokens.Colors.textSecondary)))
+                    .frame(maxWidth: 120)
+                }
+
+                Button("Save") {
+                    container.commitSettingsDraft()
+                }
+                .buttonStyle(GlassButtonStyle(prominence: .primary(DesignTokens.Colors.accentBlue)))
+                .disabled(!canSave)
+                .frame(maxWidth: 140)
             }
         }
     }
 
     private var launchAtLoginBinding: Binding<Bool> {
         Binding(
-            get: { container.settings.launchAtLoginEnabled },
+            get: { container.settingsDraft.launchAtLoginEnabled },
             set: { newValue in
-                var updated = container.settings
-                updated.launchAtLoginEnabled = newValue
-                container.saveSettings(updated)
-            }
-        )
-    }
-
-    private var revealDelayBinding: Binding<Int> {
-        Binding(
-            get: { container.settings.notchRevealDelayMilliseconds },
-            set: { newValue in
-                var updated = container.settings
-                updated.notchRevealDelayMilliseconds = newValue
-                container.saveSettings(updated)
-            }
-        )
-    }
-
-    private var closeDelayBinding: Binding<Int> {
-        Binding(
-            get: { container.settings.notchCloseDelayMilliseconds },
-            set: { newValue in
-                var updated = container.settings
-                updated.notchCloseDelayMilliseconds = newValue
-                container.saveSettings(updated)
-            }
-        )
-    }
-
-    private var remindersEnabledBinding: Binding<Bool> {
-        Binding(
-            get: { container.settings.breakRemindersEnabled },
-            set: { newValue in
-                var updated = container.settings
-                updated.breakRemindersEnabled = newValue
-                container.saveSettings(updated)
-            }
-        )
-    }
-
-    private var reminderMinutesBinding: Binding<Int> {
-        Binding(
-            get: { container.settings.breakReminderMinutes },
-            set: { newValue in
-                var updated = container.settings
-                updated.breakReminderMinutes = newValue
-                container.saveSettings(updated)
+                container.settingsDraft.launchAtLoginEnabled = newValue
             }
         )
     }
 
     private var automaticWorkTimerBinding: Binding<Bool> {
         Binding(
-            get: { container.settings.automaticWorkTimerEnabled },
+            get: { container.settingsDraft.automaticWorkTimerEnabled },
             set: { newValue in
-                var updated = container.settings
-                updated.automaticWorkTimerEnabled = newValue
-                container.saveSettings(updated)
+                container.settingsDraft.automaticWorkTimerEnabled = newValue
+            }
+        )
+    }
+
+    private var notchRevealDelayBinding: Binding<Int> {
+        Binding(
+            get: { container.settingsDraft.notchRevealDelayMilliseconds },
+            set: { newValue in
+                container.settingsDraft.notchRevealDelayMilliseconds = newValue
+            }
+        )
+    }
+
+    private var notchCloseDelayBinding: Binding<Int> {
+        Binding(
+            get: { container.settingsDraft.notchCloseDelayMilliseconds },
+            set: { newValue in
+                container.settingsDraft.notchCloseDelayMilliseconds = newValue
+            }
+        )
+    }
+
+    private var breakRemindersEnabledBinding: Binding<Bool> {
+        Binding(
+            get: { container.settingsDraft.breakRemindersEnabled },
+            set: { newValue in
+                container.settingsDraft.breakRemindersEnabled = newValue
+            }
+        )
+    }
+
+    private var breakReminderMinutesBinding: Binding<Int> {
+        Binding(
+            get: { container.settingsDraft.breakReminderMinutes },
+            set: { newValue in
+                container.settingsDraft.breakReminderMinutes = newValue
             }
         )
     }
 
     private var workdayStartBinding: Binding<Date> {
         Binding(
-            get: { timeOnlyDate(for: container.settings.workdayStartMinutes) },
+            get: { timeOnlyDate(for: container.settingsDraft.workdayStartMinutes) },
             set: { newValue in
-                var updated = container.settings
                 let proposedStart = minutesSinceMidnight(for: newValue)
-                updated.workdayStartMinutes = min(proposedStart, updated.workdayEndMinutes - 15)
-                container.saveSettings(updated)
+                container.settingsDraft.workdayStartMinutes = min(max(proposedStart, 0), (24 * 60) - 1)
             }
         )
     }
 
     private var workdayEndBinding: Binding<Date> {
         Binding(
-            get: { timeOnlyDate(for: container.settings.workdayEndMinutes) },
+            get: { timeOnlyDate(for: container.settingsDraft.workdayEndMinutes) },
             set: { newValue in
-                var updated = container.settings
                 let proposedEnd = minutesSinceMidnight(for: newValue)
-                updated.workdayEndMinutes = max(proposedEnd, updated.workdayStartMinutes + 15)
-                container.saveSettings(updated)
+                container.settingsDraft.workdayEndMinutes = min(max(proposedEnd, 0), (24 * 60) - 1)
             }
         )
     }
 
     private var holidayDates: [Date] {
-        container.settings.holidayDates
+        container.settingsDraft.holidayDates
             .map { Calendar.current.startOfDay(for: $0) }
             .sorted()
     }
@@ -662,19 +677,33 @@ private struct SettingsWorkspaceView: View {
         let normalizedDate = Calendar.current.startOfDay(for: holidayDraftDate)
         guard !holidayDates.contains(normalizedDate) else { return }
 
-        var updated = container.settings
-        updated.holidayDates.append(normalizedDate)
-        updated.holidayDates.sort()
-        container.saveSettings(updated)
+        container.settingsDraft.holidayDates.append(normalizedDate)
+        container.settingsDraft.holidayDates.sort()
     }
 
     private func removeHolidayDate(_ date: Date) {
         let normalizedDate = Calendar.current.startOfDay(for: date)
-        var updated = container.settings
-        updated.holidayDates.removeAll {
+        container.settingsDraft.holidayDates.removeAll {
             Calendar.current.isDate(Calendar.current.startOfDay(for: $0), inSameDayAs: normalizedDate)
         }
-        container.saveSettings(updated)
+    }
+
+    private var hasUnsavedChanges: Bool {
+        container.settingsDraft != container.settings
+    }
+
+    private var isWorkScheduleValid: Bool {
+        container.settingsDraft.workdayEndMinutes > container.settingsDraft.workdayStartMinutes
+    }
+
+    private var canSave: Bool {
+        guard hasUnsavedChanges else { return false }
+
+        if container.settingsDraft.automaticWorkTimerEnabled, !isWorkScheduleValid {
+            return false
+        }
+
+        return true
     }
 
     private func timeOnlyDate(for minutes: Int) -> Date {
@@ -760,8 +789,12 @@ private struct SettingsTimeInputField: View {
                 allowedRange: 0...23
             )
 
-            guard sanitized != newValue else { return }
-            hourText = sanitized
+            guard sanitized == newValue else {
+                hourText = sanitized
+                return
+            }
+
+            commitIfComplete()
         }
         .onChange(of: minuteText) { oldValue, newValue in
             let sanitized = Self.sanitizedSegmentInput(
@@ -770,16 +803,33 @@ private struct SettingsTimeInputField: View {
                 allowedRange: 0...59
             )
 
-            guard sanitized != newValue else { return }
-            minuteText = sanitized
+            guard sanitized == newValue else {
+                minuteText = sanitized
+                return
+            }
+
+            commitIfComplete()
         }
         .onChange(of: focusedSegment) { _, newValue in
-            guard newValue == nil else { return }
-            commitAndNormalize()
+            switch newValue {
+            case .hour:
+                if hourText.count == 2 {
+                    hourText = ""
+                }
+            case .minute:
+                if minuteText.count == 2 {
+                    minuteText = ""
+                }
+            case nil:
+                commitAndNormalize()
+            }
         }
         .onChange(of: selection.wrappedValue) { _, newValue in
             guard focusedSegment == nil else { return }
             syncSegments(with: newValue)
+        }
+        .onDisappear {
+            commitAndNormalize()
         }
     }
 
@@ -797,6 +847,11 @@ private struct SettingsTimeInputField: View {
         let normalizedDate = Self.date(hour: hour, minute: minute, basedOn: selection.wrappedValue)
         selection.wrappedValue = normalizedDate
         syncSegments(with: normalizedDate)
+    }
+
+    private func commitIfComplete() {
+        guard hourText.count == 2, minuteText.count == 2 else { return }
+        commitAndNormalize()
     }
 
     private func syncSegments(with date: Date) {

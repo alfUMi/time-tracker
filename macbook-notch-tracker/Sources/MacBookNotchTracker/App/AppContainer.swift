@@ -13,12 +13,13 @@ final class AppContainer {
     let islandStateMachine: IslandStateMachine
 
     var settings: AppSettings
+    var settingsDraft: AppSettings
     var selectedSection: DashboardSection
 
     private var workScheduleTimer: Timer?
     private var lastAutomaticStartDayIdentifier: String?
     private var lastAutomaticStopDayIdentifier: String?
-    private var lastAutomaticScheduleCheckAt: Date?
+    private var scheduleObserversInstalled = false
 
     var commandRouter: AppCommandRouter {
         AppCommandRouter(container: self)
@@ -39,6 +40,7 @@ final class AppContainer {
         self.islandSceneController = islandSceneController ?? IslandSceneController()
         self.sectionRegistry = sectionRegistry
         self.settings = loadedSettings
+        self.settingsDraft = loadedSettings
         self.selectedSection = sectionRegistry.sections.first ?? .overview
         self.islandStateMachine = IslandStateMachine()
         self.sessionEngine = SessionEngine(
@@ -54,8 +56,8 @@ final class AppContainer {
         islandStateMachine.updateSettings(loadedSettings)
         notificationService.requestAuthorizationIfNeeded()
         launchAtLoginController.setEnabled(loadedSettings.launchAtLoginEnabled)
-        lastAutomaticScheduleCheckAt = .now
         startWorkScheduleMonitoring()
+        installScheduleObserversIfNeeded()
         synchronizeIslandScene()
         synchronizeAutomaticWorkSchedule()
     }
@@ -64,10 +66,19 @@ final class AppContainer {
         let previousSettings = self.settings
 
         self.settings = settings
+        self.settingsDraft = settings
         settingsStore.saveSettings(settings)
         sessionEngine.updateSettings(settings)
         islandStateMachine.updateSettings(settings)
         launchAtLoginController.setEnabled(settings.launchAtLoginEnabled)
+
+        if settings.workdayStartMinutes != previousSettings.workdayStartMinutes
+            || settings.workdayEndMinutes != previousSettings.workdayEndMinutes
+            || settings.holidayDates != previousSettings.holidayDates
+        {
+            lastAutomaticStartDayIdentifier = nil
+            lastAutomaticStopDayIdentifier = nil
+        }
 
         let scheduleSettingsChanged =
             settings.automaticWorkTimerEnabled != previousSettings.automaticWorkTimerEnabled ||
@@ -75,17 +86,19 @@ final class AppContainer {
             settings.workdayEndMinutes != previousSettings.workdayEndMinutes ||
             settings.holidayDates != previousSettings.holidayDates
 
-        if settings.automaticWorkTimerEnabled && !previousSettings.automaticWorkTimerEnabled {
-            lastAutomaticScheduleCheckAt = .now
-        } else if !settings.automaticWorkTimerEnabled {
-            lastAutomaticScheduleCheckAt = nil
-        }
-
-        synchronizeAutomaticWorkSchedule()
+        synchronizeAutomaticWorkSchedule(allowCatchUpStart: false)
 
         if scheduleSettingsChanged {
             startWorkScheduleMonitoring()
         }
+    }
+
+    func commitSettingsDraft() {
+        saveSettings(settingsDraft)
+    }
+
+    func discardSettingsDraft() {
+        settingsDraft = settings
     }
 
     var isNotchPreviewVisible: Bool {
@@ -141,27 +154,49 @@ final class AppContainer {
 
         guard let nextCheckDate = nextAutomaticScheduleCheckDate(from: .now) else { return }
 
-        let timer = Timer(fire: nextCheckDate, interval: 0, repeats: false) { [weak self] _ in
+        let delay = max(0.05, nextCheckDate.timeIntervalSinceNow)
+
+        let timer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
             Task { @MainActor [weak self] in
                 self?.handleWorkScheduleTimerFired()
             }
         }
 
         timer.tolerance = 0.15
-        RunLoop.main.add(timer, forMode: .common)
         workScheduleTimer = timer
     }
 
     private func handleWorkScheduleTimerFired() {
-        synchronizeAutomaticWorkSchedule()
+        synchronizeAutomaticWorkSchedule(allowCatchUpStart: true)
         startWorkScheduleMonitoring()
     }
 
-    private func synchronizeAutomaticWorkSchedule(now: Date = .now) {
-        defer {
-            lastAutomaticScheduleCheckAt = now
+    private func installScheduleObserversIfNeeded() {
+        guard !scheduleObserversInstalled else { return }
+        scheduleObserversInstalled = true
+
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.synchronizeAutomaticWorkSchedule(allowCatchUpStart: true)
+            self.startWorkScheduleMonitoring()
         }
 
+        NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didWakeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.synchronizeAutomaticWorkSchedule(allowCatchUpStart: true)
+            self.startWorkScheduleMonitoring()
+        }
+    }
+
+    private func synchronizeAutomaticWorkSchedule(now: Date = .now, allowCatchUpStart: Bool = true) {
         guard settings.automaticWorkTimerEnabled else { return }
         guard settings.workdayEndMinutes > settings.workdayStartMinutes else { return }
         guard isAutomaticWorkday(now) else { return }
@@ -169,10 +204,6 @@ final class AppContainer {
         let dayIdentifier = automaticScheduleDayIdentifier(for: now)
         let startDate = scheduledDate(for: settings.workdayStartMinutes, on: now)
         let endDate = scheduledDate(for: settings.workdayEndMinutes, on: now)
-        let didCrossStartBoundary = {
-            guard let lastAutomaticScheduleCheckAt else { return false }
-            return lastAutomaticScheduleCheckAt < startDate && now >= startDate
-        }()
 
         if now >= endDate {
             guard sessionEngine.activeSession != nil else { return }
@@ -185,7 +216,7 @@ final class AppContainer {
 
         guard now >= startDate else { return }
         guard now < endDate else { return }
-        guard didCrossStartBoundary else { return }
+        guard allowCatchUpStart || now <= startDate.addingTimeInterval(2) else { return }
         guard sessionEngine.currentState == .idle else { return }
         guard lastAutomaticStartDayIdentifier != dayIdentifier else { return }
 
